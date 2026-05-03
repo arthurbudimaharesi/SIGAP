@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Model Pengaduan — Core model sistem SIGAP-AIR
@@ -22,6 +23,8 @@ class Pengaduan extends Model
 {
     use HasFactory;
 
+    protected $table = 'pengaduan';
+
     protected $fillable = [
         'nomor_tiket',
         'user_id',
@@ -39,6 +42,23 @@ class Pengaduan extends Model
         'tanggal_pengajuan' => 'datetime',
     ];
 
+    // tanggal_pengajuan tidak dimasukkan ke $appends agar cast datetime tetap bekerja
+    // Accessor di bawah hanya sebagai fallback ke created_at jika kolom null
+
+    // ========================
+    // ROUTE KEY
+    // ========================
+
+    /**
+     * PBI-10: route model binding pakai nomor_tiket bukan id.
+     * Contoh: /riwayat/SIGAP-20250503-0001
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'nomor_tiket';
+    }
+
+
     // ========================
     // RELASI
     // ========================
@@ -50,7 +70,8 @@ class Pengaduan extends Model
 
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class);
+        // FIX ERR-1: pakai KategoriPengaduan (PBI-02), bukan model Kategori lama
+        return $this->belongsTo(KategoriPengaduan::class, 'kategori_id');
     }
 
     public function zona()
@@ -73,6 +94,18 @@ class Pengaduan extends Model
         return $this->hasOne(Sla::class);
     }
 
+    /**
+     * PBI-10: Log perubahan status pengaduan untuk tampilan timeline.
+     * Model StatusLog belum dibuat — fallback ke penggunaan created_at / updated_at.
+     */
+    public function statusLog()
+    {
+        // Jika model StatusLog sudah dibuat, gunakan:
+        // return $this->hasMany(StatusLog::class)->orderBy('created_at');
+        return $this->hasMany(Assignment::class); // placeholder sampai model dibuat
+
+    }
+
     // ========================
     // SCOPES (Filter Query)
     // ========================
@@ -84,8 +117,7 @@ class Pengaduan extends Model
 
     public function scopeOverdue($query)
     {
-        // TODO FALAH: implementasi scope overdue berdasarkan SLA
-        return $query->whereHas('sla', fn($q) => $q->where('is_overdue', true));
+        return $query->whereHas('sla', fn ($q) => $q->where('status_sla', 'overdue'));
     }
 
     // ========================
@@ -98,5 +130,20 @@ class Pengaduan extends Model
         $prefix = 'SIGAP-' . now()->format('Ymd');
         $last = static::whereDate('created_at', today())->count() + 1;
         return $prefix . '-' . str_pad($last, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Kompatibilitas lintas-PBI:
+     * beberapa bagian app memakai tanggal_pengajuan, sementara migrasi hanya created_at.
+     * Selalu mengembalikan Carbon instance agar bisa dipanggil ->timezone(), ->format(), dll.
+     */
+    public function getTanggalPengajuanAttribute(): \Illuminate\Support\Carbon
+    {
+        $raw = $this->attributes['tanggal_pengajuan'] ?? null;
+        if ($raw) {
+            return \Illuminate\Support\Carbon::parse($raw);
+        }
+        return $this->created_at ?? now();
+
     }
 }

@@ -14,16 +14,18 @@ class Rating extends Model
 {
     use HasFactory;
 
+    protected $table = 'rating_feedback';
+
     protected $fillable = [
         'pengaduan_id',
         'user_id',
-        'bintang',      // 1 - 5
+        'rating',       // 1 - 5
         'komentar',
         'tanggal_rating',
     ];
 
     protected $casts = [
-        'bintang'       => 'integer',
+        'rating'         => 'integer',
         'tanggal_rating' => 'datetime',
     ];
 

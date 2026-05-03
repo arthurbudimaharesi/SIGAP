@@ -1,114 +1,140 @@
 <?php
-/**
- * ROUTES SIGAP-AIR
- *
- * Panduan untuk semua developer:
- * - Tambahkan route KAMU di blok grup yang sesuai dengan role
- * - Jangan mengubah route milik developer lain
- * - Gunakan resource route jika memungkinkan
- *
- * Legenda PBI per developer:
- *   ARTHUR   → PBI 1, 2, 3  (Admin: master data)
- *   SANITRA  → PBI 4, 5, 6  (Pengaduan + verifikasi + assignment)
- *   FALAH    → PBI 7, 8, 9  (Tracking + profil + SLA)
- *   AMANDA   → PBI 10, 11, 12 (Riwayat + rating + notifikasi)
- *   IMANUEL  → PBI 13, 14, 15 (Filter + laporan + dashboard)
- *   FARISHA  → PBI 16, 17, 18 (User management + petugas + kinerja)
- */
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\SlaController as AdminSlaController;
+use App\Http\Controllers\Admin\ZonaController;
+use App\Http\Controllers\Admin\DaftarPengaduanController;
+use App\Http\Controllers\Masyarakat\DashboardController as MasyarakatDashboardController;
+use App\Http\Controllers\Masyarakat\PengaduanController;
+use App\Http\Controllers\Masyarakat\RiwayatController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Supervisor\AssignmentController;
+use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboardController;
+use App\Http\Controllers\Supervisor\MonitorSlaController;
+use App\Http\Controllers\Admin\LaporanKinerjaController;
+use App\Http\Controllers\Supervisor\FilterPengaduanController;
+use App\Http\Controllers\Supervisor\KinerjaPetugasController;
+use App\Http\Controllers\Supervisor\LaporanController;
+use App\Http\Controllers\Supervisor\VerifikasiController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{Admin, Supervisor, Petugas, Masyarakat};
 
-// ============================================================
-// PUBLIC ROUTES (tanpa login)
-// ============================================================
-Route::get('/', fn() => redirect()->route('login'));
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
-// ============================================================
-// AUTHENTICATED ROUTES
-// ============================================================
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::get('/', function () {
+    return view('welcome');
+});
 
-    // --------------------------------------------------------
-    // MASYARAKAT / PELAPOR
-    // --------------------------------------------------------
-    Route::middleware('role:masyarakat')->prefix('masyarakat')->name('masyarakat.')->group(function () {
-        Route::get('/dashboard', [Masyarakat\DashboardController::class, 'index'])->name('dashboard');
+// Auth Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
 
-        // PBI-04 | SANITRA — Pengajuan pengaduan baru
-        Route::get('pengaduan/{pengaduan}/sukses', [Masyarakat\PengaduanController::class, 'sukses'])->name('pengaduan.sukses');
-        Route::resource('pengaduan', Masyarakat\PengaduanController::class)->only(['create', 'store']);
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        // PBI-10 | AMANDA — Riwayat pengaduan
-        Route::resource('riwayat', Masyarakat\RiwayatController::class)->only(['index', 'show']);
+    // PBI-12 Notifikasi (Global for all authenticated users)
+    Route::get('/notifikasi', [\App\Http\Controllers\NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::get('/notifikasi/count', [\App\Http\Controllers\NotifikasiController::class, 'count'])->name('notifikasi.count');
+    Route::post('/notifikasi/baca-semua', [\App\Http\Controllers\NotifikasiController::class, 'markAllRead'])->name('notifikasi.baca-semua');
+    Route::post('/notifikasi/{id}/baca', [\App\Http\Controllers\NotifikasiController::class, 'markRead'])->name('notifikasi.baca');
 
-        // PBI-11 | AMANDA — Rating kepuasan
-        Route::resource('rating', Masyarakat\RatingController::class)->only(['create', 'store']);
+    // Role: Masyarakat
+    Route::middleware(['role:masyarakat'])->prefix('masyarakat')->name('masyarakat.')->group(function () {
+        Route::get('/dashboard', [MasyarakatDashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/notifikasi', [Masyarakat\NotifikasiController::class, 'index'])->name('notifikasi.index');
-        Route::patch('/notifikasi/{id}/baca', [Masyarakat\NotifikasiController::class, 'markRead'])->name('notifikasi.baca');
-        Route::patch('/notifikasi/baca-semua', [Masyarakat\NotifikasiController::class, 'markAllRead'])->name('notifikasi.baca-semua');
+        // PBI-04 Pengajuan Pengaduan Digital
+        Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
+        Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+        Route::get('/pengaduan/{pengaduan}/sukses', [PengaduanController::class, 'sukses'])->name('pengaduan.sukses');
+
+        // PBI-10 Riwayat Pengaduan
+        // Routes: GET /masyarakat/pengaduan/riwayat & /masyarakat/pengaduan/riwayat/{nomor_tiket}
+        Route::get('/pengaduan/riwayat', [RiwayatController::class, 'index'])->name('pengaduan.riwayat');
+        Route::get('/pengaduan/riwayat/{nomor_tiket}', [RiwayatController::class, 'show'])->name('pengaduan.riwayat.show');
+
+        // PBI-12 Notifikasi
+        Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
+        Route::patch('/notifikasi/{id}/read', [NotifikasiController::class, 'markRead'])->name('notifikasi.read');
+        Route::patch('/notifikasi/read-all', [NotifikasiController::class, 'markAllRead'])->name('notifikasi.read-all');
+
     });
 
-    // --------------------------------------------------------
-    // PETUGAS TEKNIS
-    // --------------------------------------------------------
-    Route::middleware('role:petugas')->prefix('petugas')->name('petugas.')->group(function () {
-        Route::get('/dashboard', [Petugas\DashboardController::class, 'index'])->name('dashboard');
+    // Role: Petugas
+    Route::middleware(['role:petugas'])->prefix('petugas')->name('petugas.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Petugas\DashboardController::class, 'index'])->name('dashboard');
 
-        // PBI-07 | FALAH
-        Route::resource('tugas', Petugas\PenangananController::class)->only(['index', 'show', 'update']);
-
-        // PBI-08 | FALAH
-        Route::get('/profil/edit', [Petugas\ProfilController::class, 'edit'])->name('profil.edit');
-        Route::patch('/profil', [Petugas\ProfilController::class, 'update'])->name('profil.update');
+        // PBI-07 — Penanganan Tugas
+        Route::get('/tugas', [\App\Http\Controllers\Petugas\PenangananController::class, 'index'])->name('tugas.index');
+        Route::get('/tugas/{tugas}', [\App\Http\Controllers\Petugas\PenangananController::class, 'show'])->name('tugas.show');
+        Route::patch('/tugas/{tugas}', [\App\Http\Controllers\Petugas\PenangananController::class, 'update'])->name('tugas.update');
+        Route::get('/riwayat', [\App\Http\Controllers\Petugas\PenangananController::class, 'riwayat'])->name('riwayat');
     });
 
-    // --------------------------------------------------------
-    // SUPERVISOR & ADMIN (SHARED)
-    // --------------------------------------------------------
-    Route::middleware('role:admin,supervisor')->prefix('reports')->name('reports.')->group(function () {
-        Route::get('/filter', [Supervisor\FilterPengaduanController::class, 'index'])->name('filter.index');
+    // Role: Supervisor
+    Route::middleware(['role:supervisor'])->prefix('supervisor')->name('supervisor.')->group(function () {
+        Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/laporan', [Supervisor\LaporanController::class, 'index'])->name('laporan.index');
-        Route::get('/laporan/export-pdf', [Supervisor\LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
+        Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.index');
+        Route::get('/verifikasi/{pengaduan}', [VerifikasiController::class, 'show'])->name('verifikasi.show');
+        Route::patch('/verifikasi/{pengaduan}', [VerifikasiController::class, 'update'])->name('verifikasi.update');
 
-        Route::get('/kinerja', [Admin\LaporanKinerjaController::class, 'index'])->name('kinerja.index');
-        Route::get('/kinerja/export-excel', [Admin\LaporanKinerjaController::class, 'exportExcel'])->name('kinerja.export-excel');
+        Route::get('/filter', [FilterPengaduanController::class, 'index'])->name('filter.index');
+        Route::get('/filter/export-csv', [FilterPengaduanController::class, 'exportCsv'])->name('filter.export-csv');
+
+        Route::get('/assignment/{pengaduan}/create', [AssignmentController::class, 'create'])->name('assignment.create');
+        Route::post('/assignment/{pengaduan}', [AssignmentController::class, 'store'])->name('assignment.store');
+
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
+        Route::get('/kinerja', [KinerjaPetugasController::class, 'index'])->name('kinerja.index');
+        Route::get('/kinerja/export-excel', [KinerjaPetugasController::class, 'exportExcel'])->name('kinerja.export-excel');
+
+        // PBI-09: Monitor SLA & Alert Overdue
+        Route::get('/monitor-sla', [MonitorSlaController::class, 'index'])->name('monitor-sla.index');
     });
 
-    // --------------------------------------------------------
-    // SUPERVISOR
-    // --------------------------------------------------------
-    Route::middleware('role:supervisor')->prefix('supervisor')->name('supervisor.')->group(function () {
-        Route::get('/dashboard', [Supervisor\DashboardController::class, 'index'])->name('dashboard');
+    // Role: Admin
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/pengaduan', [DaftarPengaduanController::class, 'index'])->name('pengaduan.index');
+        Route::get('/pengaduan/export-csv', [DaftarPengaduanController::class, 'exportCsv'])->name('pengaduan.export-csv');
+        Route::get('/kinerja', [LaporanKinerjaController::class, 'index'])->name('kinerja.index');
+        Route::get('/kinerja/export-excel', [LaporanKinerjaController::class, 'exportExcel'])->name('kinerja.export-excel');
+        // PBI-09: Konfigurasi SLA per Kategori
+        Route::get('/sla', [AdminSlaController::class, 'index'])->name('sla.index');
+        Route::get('/sla/{sla}/edit', [AdminSlaController::class, 'edit'])->name('sla.edit');
+        Route::patch('/sla/{sla}', [AdminSlaController::class, 'update'])->name('sla.update');
+        Route::resource('pelanggan', \App\Http\Controllers\Admin\PelangganController::class);
+        Route::resource('kategori', \App\Http\Controllers\Admin\KategoriController::class)
+            ->except(['show']);
 
-        // PBI-05 | SANITRA
-        Route::resource('verifikasi', Supervisor\VerifikasiController::class)->only(['index', 'show', 'update']);
-
-        // PBI-06 | SANITRA
-        Route::get('assignment/{pengaduan}/create', [Supervisor\AssignmentController::class, 'create'])->name('assignment.create');
-        Route::post('assignment/{pengaduan}', [Supervisor\AssignmentController::class, 'store'])->name('assignment.store');
+        // PBI-03 — Zona Wilayah & Pemetaan Petugas
+        Route::get('zona',                              [ZonaController::class, 'index'])->name('zona.index');
+        Route::get('zona/create',                       [ZonaController::class, 'create'])->name('zona.create');
+        Route::post('zona',                             [ZonaController::class, 'store'])->name('zona.store');
+        Route::get('zona/{id}',                         [ZonaController::class, 'show'])->name('zona.show');
+        Route::get('zona/{id}/edit',                    [ZonaController::class, 'edit'])->name('zona.edit');
+        Route::put('zona/{id}',                         [ZonaController::class, 'update'])->name('zona.update');
+        Route::delete('zona/{id}',                      [ZonaController::class, 'destroy'])->name('zona.destroy');
+        Route::post('zona/{id}/assign-petugas',         [ZonaController::class, 'assignPetugas'])->name('zona.assign-petugas');
+        Route::delete('zona/{id}/remove-petugas/{petugasId}', [ZonaController::class, 'removePetugas'])->name('zona.remove-petugas');
     });
 
-    // --------------------------------------------------------
-    // ADMIN
-    // --------------------------------------------------------
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
-
-        Route::resource('pelanggan', Admin\PelangganController::class);
-        Route::resource('kategori', Admin\KategoriController::class);
-        Route::resource('zona', Admin\ZonaController::class);
-
-        Route::resource('sla', Petugas\SlaController::class)->only(['index', 'edit', 'update']);
-
-        Route::resource('user', Admin\UserController::class);
-        Route::post('user/{user}/reset-password', [Admin\UserController::class, 'resetPassword'])->name('user.reset-password');
-
-        Route::resource('petugas', Admin\PetugasController::class);
+    // Shared: Admin & Supervisor
+    Route::middleware(['role:admin,supervisor'])->group(function () {
+        // Shared routes here
     });
-
 });
 
 require __DIR__.'/auth.php';
