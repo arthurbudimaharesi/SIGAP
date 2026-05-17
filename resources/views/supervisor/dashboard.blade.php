@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-supervisor-layout>
     <x-slot name="title">Dashboard Supervisor</x-slot>
 
     <div class="mx-auto w-full max-w-6xl">
@@ -37,6 +37,15 @@
                 <div class="text-xs text-gray-500">Petugas Aktif</div>
                 <div class="mt-1 text-2xl font-extrabold text-violet-600">{{ $kpi['total_petugas'] ?? 0 }}</div>
             </div>
+        </div>
+
+        {{-- Monitor Petugas (realtime) --}}
+        <div class="mb-6">
+            <x-supervisor-petugas-monitor
+                :petugas-list="$petugasMonitorList"
+                :summary="$petugasMonitorSummary"
+                :compact="true"
+            />
         </div>
 
         {{-- Quick Action + Antrean --}}
@@ -164,4 +173,4 @@
         });
     </script>
     @endpush
-</x-app-layout>
+</x-app-supervisor-layout>

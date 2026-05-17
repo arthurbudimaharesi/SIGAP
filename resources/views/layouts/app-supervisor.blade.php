@@ -4,9 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIGAP-AIR - Panel Supervisor</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    @vite(['resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        headline: ['Manrope'],
+                        body: ['Inter'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
 </head>
-<body class="bg-surface">
+<body class="bg-gray-50 font-body text-gray-900 antialiased">
     <div x-data="{
         sidebarOpen: window.innerWidth >= 1024,
         showNotifications: false,
@@ -98,7 +118,7 @@
 
                             <!-- Profile Dropdown Menu -->
                             <div x-show="showProfileDropdown" @click.outside="showProfileDropdown = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">Edit Profil</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">Edit Profil</a>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">Ganti Password</a>
                                 <form method="POST" action="{{ route('logout') }}" class="block" data-confirm="Yakin ingin logout dari akun ini?">
                                     @csrf
@@ -153,11 +173,11 @@
                         <span>Semua Pengaduan</span>
                     </a>
 
-                    <a href="#" :class="isactive('/supervisor/assignment') ? 'bg-[#0F4C81] text-white' : 'text-gray-300 hover:bg-gray-800'" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors">
+                    <a href="{{ route('supervisor.monitor-petugas.index') }}" :class="isactive('/supervisor/monitor-petugas') ? 'bg-[#0F4C81] text-white' : 'text-gray-300 hover:bg-gray-800'" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                         </svg>
-                        <span>Assignment</span>
+                        <span>Monitor Petugas</span>
                     </a>
 
                     <a href="{{ route('supervisor.laporan.index') }}" :class="isactive('/supervisor/laporan') ? 'bg-[#0F4C81] text-white' : 'text-gray-300 hover:bg-gray-800'" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors">
@@ -167,7 +187,14 @@
                         <span>Laporan PDF</span>
                     </a>
 
-                    <a href="#" :class="isactive('/supervisor/kinerja') ? 'bg-[#0F4C81] text-white' : 'text-gray-300 hover:bg-gray-800'" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors">
+                    <a href="{{ route('supervisor.monitor-sla.index') }}" :class="isactive('/supervisor/monitor-sla') ? 'bg-[#0F4C81] text-white' : 'text-gray-300 hover:bg-gray-800'" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Monitor SLA</span>
+                    </a>
+
+                    <a href="{{ route('supervisor.kinerja.index') }}" :class="isactive('/supervisor/kinerja') ? 'bg-[#0F4C81] text-white' : 'text-gray-300 hover:bg-gray-800'" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
                         </svg>
@@ -189,7 +216,7 @@
 
             <!-- MAIN CONTENT -->
             <main class="flex-1 overflow-y-auto">
-                <div class="max-container py-8">
+                <div class="p-6 lg:p-8">
                     {{ $slot }}
                 </div>
             </main>
@@ -202,5 +229,6 @@
     </div>
 
     @include('layouts.partials.flash-message')
+    @stack('scripts')
 </body>
 </html>
