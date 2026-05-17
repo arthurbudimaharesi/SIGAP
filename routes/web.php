@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\PetugasController;
 use App\Http\Controllers\Admin\SlaController as AdminSlaController;
 use App\Http\Controllers\Admin\ZonaController;
 use App\Http\Controllers\Admin\DaftarPengaduanController;
@@ -124,6 +125,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('petugas', AdminPetugasController::class)->parameters(['petugas' => 'petugas']);
         // Hapus permanen petugas (hard delete)
         Route::delete('petugas/{petugas}/hapus-permanen', [AdminPetugasController::class, 'hapusPermanen'])->name('petugas.hapus-permanen');
+        // PBI-17 — Manajemen Petugas Teknis
+        Route::resource('petugas', PetugasController::class)->except(['show']);
 
         // PBI-03 — Zona Wilayah & Pemetaan Petugas
         Route::get('zona',                              [ZonaController::class, 'index'])->name('zona.index');
