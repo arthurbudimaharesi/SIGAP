@@ -46,7 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifikasi', [\App\Http\Controllers\NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::get('/notifikasi/count', [\App\Http\Controllers\NotifikasiController::class, 'count'])->name('notifikasi.count');
     Route::post('/notifikasi/baca-semua', [\App\Http\Controllers\NotifikasiController::class, 'markAllRead'])->name('notifikasi.baca-semua');
-    Route::post('/notifikasi/{id}/baca', [\App\Http\Controllers\NotifikasiController::class, 'markRead'])->name('notifikasi.baca');
+    Route::get('/notifikasi/{id}/baca', [\App\Http\Controllers\NotifikasiController::class, 'markRead'])->name('notifikasi.baca');
 
     // Role: Masyarakat
     Route::middleware(['role:masyarakat'])->prefix('masyarakat')->name('masyarakat.')->group(function () {
