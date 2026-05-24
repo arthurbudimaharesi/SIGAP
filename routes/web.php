@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\LaporanKinerjaController;
 use App\Http\Controllers\Supervisor\FilterPengaduanController;
 use App\Http\Controllers\Supervisor\KinerjaPetugasController;
 use App\Http\Controllers\Supervisor\LaporanController;
+use App\Http\Controllers\Supervisor\ProfilController as SupervisorProfilController;
 use App\Http\Controllers\Supervisor\VerifikasiController;
 use Illuminate\Support\Facades\Route;
 
@@ -88,6 +89,10 @@ Route::middleware('auth')->group(function () {
     // Role: Supervisor
     Route::middleware(['role:supervisor'])->prefix('supervisor')->name('supervisor.')->group(function () {
         Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
+
+        // PBI-27: Kelola Profil Supervisor
+        Route::get('/profil', [SupervisorProfilController::class, 'edit'])->name('profil.edit');
+        Route::patch('/profil', [SupervisorProfilController::class, 'update'])->name('profil.update');
 
         Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.index');
         Route::get('/verifikasi/{pengaduan}', [VerifikasiController::class, 'show'])->name('verifikasi.show');
