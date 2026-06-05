@@ -34,6 +34,43 @@
         $pollUrl = route('supervisor.petugas.status', ['zona_id' => $pengaduan->zona_id]);
     @endphp
 
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div class="lg:col-span-1">
+            <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                <h2 class="mb-4 font-semibold text-gray-800">Info Pengaduan</h2>
+                <dl class="space-y-2 text-sm">
+                    <div>
+                        <dt class="text-gray-500">No. Tiket</dt>
+                        <dd class="font-mono font-bold text-[#022448]">{{ $pengaduan->nomor_tiket }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">Kategori</dt>
+                        <dd class="font-semibold">{{ $pengaduan->kategori->nama_kategori }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">Zona</dt>
+                        <dd class="font-semibold flex items-center flex-wrap gap-2">
+                            {{ $pengaduan->zona->nama_zona }}
+                            @if($pengaduan->is_zona_valid === 1)
+                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700" title="Validasi otomatis: Sesuai">
+                                    <span class="material-symbols-outlined text-[14px]">verified</span> Valid
+                                </span>
+                            @elseif($pengaduan->is_zona_valid === 0)
+                                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-700" title="Validasi otomatis: Peringatan (Mungkin tidak sesuai)">
+                                    <span class="material-symbols-outlined text-[14px]">warning</span> Warning
+                                </span>
+                            @endif
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">Lokasi</dt>
+                        <dd>{{ $pengaduan->lokasi }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">SLA</dt>
+                        <dd class="font-semibold text-amber-600">{{ $pengaduan->kategori->sla_jam }} jam</dd>
+                    </div>
+                </dl>
     <div
         class="mb-6"
         x-data="petugasMonitor({
