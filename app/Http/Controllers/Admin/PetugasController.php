@@ -67,6 +67,40 @@ class PetugasController extends Controller
      */
     public function index(Request $request)
     {
+        $query = Petugas::with(['user', 'zones', 'zona'])
+            ->latest();
+
+        // Filter pencarian berdasarkan nama atau NIP
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('user', function ($sq) use ($search) {
+                    $sq->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })->orWhere('nip', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter berdasarkan status
+        if ($request->filled('status')) {
+            $query->where('status_tersedia', $request->status);
+        }
+
+        // Filter berdasarkan zona (bisa pivot atau fallback)
+        if ($request->filled('zona_id')) {
+            if ($request->zona_id === 'tanpa_zona') {
+                $query->whereDoesntHave('zones')->whereNull('zona_id');
+            } else {
+                $query->where(function ($q) use ($request) {
+                    $q->whereHas('zones', function ($sq) use ($request) {
+                        $sq->where('zona_wilayah.id', $request->zona_id);
+                    })->orWhere('zona_id', $request->zona_id);
+                });
+            }
+        }
+
+        $petugas = $query->paginate(15)->withQueryString();
+        $zonas   = ZonaWilayah::where('is_active', true)->orderBy('nama_zona')->get();
         $data = $this->manajemenService->indexData($request);
 
         return view('admin.petugas.index', array_merge($data, [
@@ -261,7 +295,7 @@ class PetugasController extends Controller
 
         return redirect()
             ->route('admin.petugas.index')
-            ->with('success', 'Petugas ' . ($petugas->user?->name ?? '') . ' berhasil dinonaktifkan.');
+            ->with('success', 'Petugas berhasil dinonaktifkan.');
     }
 
     /**
