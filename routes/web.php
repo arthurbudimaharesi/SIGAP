@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PetugasController;
 use App\Http\Controllers\Admin\SlaController as AdminSlaController;
 use App\Http\Controllers\Admin\ZonaController;
+use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\DaftarPengaduanController;
 use App\Http\Controllers\Masyarakat\DashboardController as MasyarakatDashboardController;
 use App\Http\Controllers\Masyarakat\PengaduanController;
@@ -171,6 +172,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('zona/{id}',                      [ZonaController::class, 'destroy'])->name('zona.destroy');
         Route::post('zona/{id}/assign-petugas',         [ZonaController::class, 'assignPetugas'])->name('zona.assign-petugas');
         Route::delete('zona/{id}/remove-petugas/{petugasId}', [ZonaController::class, 'removePetugas'])->name('zona.remove-petugas');
+
+        // CRUD Pengumuman Layanan
+        Route::resource('announcements', AnnouncementController::class);
     });
 
     // Shared: Admin & Supervisor

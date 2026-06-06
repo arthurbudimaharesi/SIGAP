@@ -69,4 +69,12 @@ class ZonaWilayah extends Model
     {
         return $this->hasMany(Pengaduan::class, 'zona_id');
     }
+
+    /**
+     * Pengumuman yang mencakup zona ini.
+     */
+    public function announcements()
+    {
+        return $this->belongsToMany(Announcement::class, 'announcement_zone', 'zone_id', 'announcement_id');
+    }
 }
