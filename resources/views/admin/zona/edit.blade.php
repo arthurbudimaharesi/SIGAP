@@ -1,5 +1,19 @@
 <x-app-admin-layout>
 
+{{-- Leaflet CSS & Leaflet Draw CSS --}}
+@push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+            z-index: 0;
+        }
+    </style>
+@endpush
 {{-- Page Header --}}
 @push('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -100,12 +114,21 @@
                 <p class="text-xs text-gray-500 mb-2">Gunakan ikon <b>Draw a Polygon</b> pada peta untuk menggambar area batas wilayah.</p>
                 <div id="map"></div>
                 <input type="hidden" id="geo_boundary" name="geo_boundary" value="{{ old('geo_boundary', $zona->geo_boundary) }}" required>
+            {{-- Geo Boundary Map --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                    Batas Wilayah Zona (Polygon) <span class="text-gray-400 font-normal">(opsional)</span>
+                </label>
+                <p class="text-xs text-gray-500 mb-3">Gunakan tool di sebelah kiri peta (ikon polygon) untuk menggambar atau mengedit batas wilayah zona ini.</p>
+                <div id="map"></div>
+                <input type="hidden" name="geo_boundary" id="geo_boundary" value="{{ old('geo_boundary', is_array($zona->geo_boundary) ? json_encode($zona->geo_boundary) : $zona->geo_boundary) }}">
                 @error('geo_boundary')
                     <p class="mt-1.5 text-xs text-red-600 flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">error</span>{{ $message }}
                     </p>
                 @enderror
             </div>
+
 
             {{-- Is Active --}}
             <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
@@ -207,3 +230,100 @@
 @endpush
 
 </x-app-admin-layout>
+
+@push('scripts')
+    {{-- Leaflet JS & Leaflet Draw JS --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi Peta (Default Center: Bandung)
+            const map = L.map('map').setView([-6.9175, 107.6191], 12);
+
+            // Tile layer OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // FeatureGroup untuk menyimpan polygon yang digambar
+            const drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+
+            // Inisialisasi Leaflet Draw Control
+            const drawControl = new L.Control.Draw({
+                draw: {
+                    polygon: {
+                        allowIntersection: false,
+                        drawError: { color: '#e1e100', message: '<strong>Peringatan!</strong> Polygon tidak boleh menyilang!' },
+                        shapeOptions: { color: '#022448', fillColor: '#022448', fillOpacity: 0.2 }
+                    },
+                    polyline: false,
+                    rectangle: false,
+                    circle: false,
+                    marker: false,
+                    circlemarker: false
+                },
+                edit: {
+                    featureGroup: drawnItems,
+                    remove: true
+                }
+            });
+            map.addControl(drawControl);
+
+            const inputGeoBoundary = document.getElementById('geo_boundary');
+
+            // Restore existing polygon from database or old input
+            if (inputGeoBoundary.value) {
+                try {
+                    const geojson = JSON.parse(inputGeoBoundary.value);
+                    const layer = L.geoJSON(geojson, {
+                        style: { color: '#022448', fillColor: '#022448', fillOpacity: 0.2 }
+                    });
+                    
+                    // Ekstrak polygon dari GeoJSON layer dan masukkan ke drawnItems
+                    layer.eachLayer(function (l) {
+                        drawnItems.addLayer(l);
+                    });
+                    
+                    // Fit map bounds to the polygon
+                    if (Object.keys(drawnItems._layers).length > 0) {
+                        map.fitBounds(drawnItems.getBounds());
+                    }
+                } catch (e) {
+                    console.error("Gagal memparsing old geo_boundary", e);
+                }
+            }
+
+            // Fungsi untuk mengupdate hidden input
+            function updateGeoBoundary() {
+                const data = drawnItems.toGeoJSON();
+                if (data.features.length === 0) {
+                    inputGeoBoundary.value = '';
+                    return;
+                }
+                const geometry = data.features[0].geometry;
+                inputGeoBoundary.value = JSON.stringify(geometry);
+            }
+
+            // Event saat selesai menggambar
+            map.on(L.Draw.Event.CREATED, function (event) {
+                const layer = event.layer;
+                // Bersihkan polygon sebelumnya agar hanya ada 1 polygon
+                drawnItems.clearLayers();
+                drawnItems.addLayer(layer);
+                updateGeoBoundary();
+            });
+
+            // Event saat polygon diedit
+            map.on(L.Draw.Event.EDITED, function () {
+                updateGeoBoundary();
+            });
+
+            // Event saat polygon dihapus
+            map.on(L.Draw.Event.DELETED, function () {
+                updateGeoBoundary();
+            });
+        });
+    </script>
+@endpush
