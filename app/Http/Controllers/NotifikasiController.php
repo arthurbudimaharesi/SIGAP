@@ -10,13 +10,13 @@ class NotifikasiController extends Controller
 {
     public function index(Request $request)
     {
-        $notifikasi = Notifikasi::where('user_id', auth()->id())
+        $notifikasis = Notifikasi::where('user_id', auth()->id())
             ->when($request->filter === 'unread', fn($q) => $q->where('is_read', false))
             ->when($request->filter === 'read', fn($q) => $q->where('is_read', true))
             ->orderByDesc('created_at')
             ->paginate(15);
             
-        return view('notifikasi.index', compact('notifikasi'));
+        return view('notifikasi.index', compact('notifikasis'));
     }
 
     public function count()

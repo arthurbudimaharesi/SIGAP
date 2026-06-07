@@ -7,7 +7,10 @@
 </div>
 @endif
 
-<h1 class="text-2xl font-bold text-gray-800 mb-5">🔍 {{ $pageTitle }}</h1>
+<h1 class="text-2xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+    <span class="material-symbols-outlined text-[#022448] text-3xl">search</span>
+    {{ $pageTitle }}
+</h1>
 
 @php
     $currentSort = request('sort', 'tanggal_pengajuan');
@@ -91,11 +94,15 @@
             Tampilkan hanya yang Overdue
         </label>
         <div class="ml-auto flex flex-wrap gap-2">
-            <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm hover:bg-blue-700 transition">🔍 Terapkan</button>
+            <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm hover:bg-blue-700 transition inline-flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-base">search</span>
+                Terapkan
+            </button>
             <a href="{{ route($indexRoute) }}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition inline-flex items-center">Reset</a>
             <a href="{{ route($exportCsvRoute, request()->query()) }}"
-                class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-emerald-700 transition inline-flex items-center">
-                ⬇ Export CSV
+                class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-emerald-700 transition inline-flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-base">download</span>
+                Export CSV
             </a>
         </div>
     </div>
@@ -151,11 +158,11 @@
                     <td class="px-5 py-3 text-center"><x-badge-status :status="$p->status" /></td>
                     <td class="px-5 py-3 text-center">
                         @if ($p->sla?->is_overdue)
-                            <span class="text-xs text-red-600 font-bold">🚨 Overdue</span>
+                            <span class="text-xs text-red-600 font-bold inline-flex items-center gap-1 justify-center"><span class="material-symbols-outlined text-sm">error</span> Overdue</span>
                         @elseif ($p->sla?->is_fulfilled)
-                            <span class="text-xs text-green-600">✅ OK</span>
+                            <span class="text-xs text-green-600 font-semibold inline-flex items-center gap-1 justify-center"><span class="material-symbols-outlined text-sm">check_circle</span> OK</span>
                         @elseif ($p->sla)
-                            <span class="text-xs text-orange-600">⏱️ Aktif</span>
+                            <span class="text-xs text-orange-600 font-semibold inline-flex items-center gap-1 justify-center"><span class="material-symbols-outlined text-sm">schedule</span> Aktif</span>
                         @else
                             <span class="text-xs text-gray-400">—</span>
                         @endif

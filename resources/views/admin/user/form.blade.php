@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-admin-layout>
     <x-slot name="title">{{ isset($user) ? 'Edit User' : 'Tambah User' }}</x-slot>
 
     <div class="mb-4">
@@ -6,8 +6,14 @@
     </div>
 
     <div class="max-w-lg mx-auto bg-white rounded-xl shadow p-6">
-        <h1 class="text-xl font-bold text-gray-800 mb-5">
-            {{ isset($user) ? '✏️ Edit User' : '➕ Tambah User Baru' }}
+        <h1 class="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+            @if(isset($user))
+                <span class="material-symbols-outlined text-amber-500">edit_square</span>
+                Edit User
+            @else
+                <span class="material-symbols-outlined text-blue-500">person_add</span>
+                Tambah User Baru
+            @endif
         </h1>
 
         <form method="POST" action="{{ isset($user) ? route('admin.user.update', $user) : route('admin.user.store') }}">
@@ -59,11 +65,17 @@
             </div>
 
             <div class="flex gap-3">
-                <button type="submit" class="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition">
-                    {{ isset($user) ? '💾 Simpan' : '➕ Tambah User' }}
+                <button type="submit" class="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition flex justify-center items-center gap-2">
+                    @if(isset($user))
+                        <span class="material-symbols-outlined text-lg">save</span>
+                        Simpan
+                    @else
+                        <span class="material-symbols-outlined text-lg">person_add</span>
+                        Tambah User
+                    @endif
                 </button>
                 <a href="{{ route('admin.user.index') }}" class="flex-1 text-center bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition">Batal</a>
             </div>
         </form>
     </div>
-</x-app-layout>
+</x-app-admin-layout>

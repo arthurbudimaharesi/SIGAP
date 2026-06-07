@@ -153,6 +153,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('kategori', \App\Http\Controllers\Admin\KategoriController::class)
             ->except(['show']);
 
+        // PBI-16 — Manajemen User & Role
+        Route::post('user/{user}/reset-password', [\App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('user.reset-password');
+        Route::resource('user', \App\Http\Controllers\Admin\UserController::class);
+
         // PBI-16 — Kelola Data Petugas Teknis & PBI-17 — Manajemen Petugas Teknis
         Route::resource('petugas', AdminPetugasController::class)->parameters(['petugas' => 'petugas']);
         // Hapus permanen petugas (hard delete)

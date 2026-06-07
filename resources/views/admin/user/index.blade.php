@@ -1,11 +1,15 @@
-<x-app-layout>
+<x-app-admin-layout>
     <x-slot name="title">Manajemen User</x-slot>
 
     <div class="flex items-center justify-between mb-5">
-        <h1 class="text-2xl font-bold text-gray-800">👥 Manajemen User</h1>
+        <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#022448] text-3xl">manage_accounts</span>
+            Manajemen User
+        </h1>
         <a href="{{ route('admin.user.create') }}"
-           class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
-            + Tambah User
+           class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
+            <span class="material-symbols-outlined text-lg">person_add</span>
+            Tambah User
         </a>
     </div>
 
@@ -40,17 +44,25 @@
                         @endif
                     </td>
                     <td class="px-5 py-3">
-                        <div class="flex justify-center gap-1.5">
-                            <a href="{{ route('admin.user.edit', $user) }}"
-                               class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs hover:bg-blue-100 transition">Edit</a>
-                            <form method="POST" action="{{ route('admin.user.reset-password', $user) }}" onsubmit="return confirm('Reset password ke \'password\'?')">
+                        <div class="flex items-center justify-center gap-1">
+                            {{-- Reset Password --}}
+                            <form method="POST" action="{{ route('admin.user.reset-password', $user) }}" style="display:inline;">
                                 @csrf
-                                <button type="submit" class="bg-yellow-50 text-yellow-700 px-2 py-1 rounded text-xs hover:bg-yellow-100 transition">Reset PW</button>
+                                <button type="button" onclick="if(confirm('Reset password ke \'password\'?')){this.closest('form').submit();}" class="p-2 text-[#022448] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer" title="Reset Password">
+                                    <span class="material-symbols-outlined text-xl" style="pointer-events:none;">lock_reset</span>
+                                </button>
                             </form>
+                            {{-- Edit --}}
+                            <a href="{{ route('admin.user.edit', $user) }}" class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
+                                <span class="material-symbols-outlined text-xl">edit</span>
+                            </a>
+                            {{-- Nonaktifkan --}}
                             @if ($user->id !== auth()->id())
-                            <form method="POST" action="{{ route('admin.user.destroy', $user) }}" onsubmit="return confirm('Nonaktifkan user ini?')">
+                            <form method="POST" action="{{ route('admin.user.destroy', $user) }}" style="display:inline;">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="bg-red-50 text-red-700 px-2 py-1 rounded text-xs hover:bg-red-100 transition">Nonaktifkan</button>
+                                <button type="button" onclick="if(confirm('Nonaktifkan user ini?')){this.closest('form').submit();}" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Nonaktifkan">
+                                    <span class="material-symbols-outlined text-xl" style="pointer-events:none;">person_off</span>
+                                </button>
                             </form>
                             @endif
                         </div>
@@ -63,4 +75,4 @@
         </table>
         <div class="px-5 py-4 border-t">{{ $users->links() }}</div>
     </div>
-</x-app-layout>
+</x-app-admin-layout>

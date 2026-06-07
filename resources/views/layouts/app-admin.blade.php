@@ -43,12 +43,17 @@
         },
         async fetchNotifications() {
             try {
-                const response = await fetch('/api/notifikasi/count');
+                const response = await fetch('/notifikasi/count');
                 const data = await response.json();
                 this.unreadCount = data.unread_count || 0;
+                this.notifications = data.notifications || [];
             } catch (error) {
                 console.error('Failed to fetch notifications:', error);
             }
+        },
+        formatTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
         },
         isactive(route) {
             return window.location.pathname.includes(route);
@@ -94,13 +99,24 @@
                                     <h3 class="font-semibold text-gray-900">Notifikasi</h3>
                                 </div>
                                 <div class="max-h-96 overflow-y-auto">
-                                    <div class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors">
-                                        <p class="text-sm font-medium text-gray-900">Pengaduan menunggu verifikasi</p>
-                                        <p class="text-xs text-gray-500 mt-1">5 pengaduan baru dari masyarakat</p>
+                                    <template x-for="notif in notifications" :key="notif.id">
+                                        <a :href="'/notifikasi/' + notif.id + '/baca'" class="block p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                            <p class="text-sm font-medium text-gray-900" x-text="notif.judul"></p>
+                                            <p class="text-xs text-gray-500 mt-1" x-text="notif.pesan"></p>
+                                            <p class="text-xs text-gray-400 mt-1 font-semibold" x-text="formatTime(notif.created_at)"></p>
+                                        </a>
+                                    </template>
+                                    
+                                    <div x-show="notifications.length === 0" class="p-6 text-center text-sm text-gray-500">
+                                        Tidak ada notifikasi baru
                                     </div>
                                 </div>
-                                <div class="p-3 border-t border-gray-200 text-center">
-                                    <a href="#" class="text-sm text-[#022448] hover:text-[#1e3a5f] font-medium">Lihat Semua Notifikasi</a>
+                                <div class="p-3 border-t border-gray-200 text-center flex flex-col gap-2">
+                                    <form method="POST" action="{{ route('notifikasi.baca-semua') }}" x-show="notifications.length > 0">
+                                        @csrf
+                                        <button type="submit" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium w-full">Tandai Semua sebagai Dibaca</button>
+                                    </form>
+                                    <a href="{{ route('notifikasi.index') }}" class="text-sm text-[#022448] hover:text-[#1e3a5f] font-medium block w-full">Lihat Semua Notifikasi</a>
                                 </div>
                             </div>
                         </div>
@@ -182,7 +198,7 @@
 
                     <p class="text-xs text-blue-300/60 uppercase tracking-wider font-semibold px-4 mt-6 mb-3">Pengaturan</p>
 
-                    <a href="#" :class="isactive('/admin/users') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                    <a href="{{ route('admin.user.index') }}" :class="isactive('/admin/user') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                         <span class="material-symbols-outlined text-xl">manage_accounts</span>
                         <span>Manajemen User</span>
                     </a>
