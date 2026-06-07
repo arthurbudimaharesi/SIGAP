@@ -15,10 +15,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Pengaduan\StorePengaduanRequest;
 use App\Models\{Pengaduan, KategoriPengaduan, Zona};  // FIX ERR-3: pakai KategoriPengaduan
 use App\Services\PengaduanService;
+use App\Services\ZonaValidationService;
+use Illuminate\Http\Request;
 
 class PengaduanController extends Controller
 {
-    public function __construct(private PengaduanService $pengaduanService) {}
+    public function __construct(
+        private PengaduanService $pengaduanService,
+        private ZonaValidationService $zonaValidationService
+    ) {}
 
     public function create()
     {
@@ -26,7 +31,16 @@ class PengaduanController extends Controller
         $kategoris = KategoriPengaduan::where('is_active', true)->get();
         $zonas     = Zona::where('is_active', true)->get();
 
-        return view('masyarakat.pengaduan.create', compact('kategoris', 'zonas'));
+        // Kirim data GeoJSON boundary untuk setiap zona agar bisa dirender di peta Leaflet
+        // Format: [ { id, nama_zona, kode_zona, geo_boundary: {...} }, ... ]
+        $zonaBoundaries = $zonas->map(fn($z) => [
+            'id'           => $z->id,
+            'nama_zona'    => $z->nama_zona,
+            'kode_zona'    => $z->kode_zona,
+            'geo_boundary' => $z->geo_boundary,
+        ])->values();
+
+        return view('masyarakat.pengaduan.create', compact('kategoris', 'zonas', 'zonaBoundaries'));
     }
 
     // ✅ Halaman sukses setelah submit
@@ -46,5 +60,21 @@ class PengaduanController extends Controller
         );
 
         return redirect()->route('masyarakat.pengaduan.sukses', $pengaduan);
+    }
+
+    // ✅ Validasi zona otomatis (PBI-23)
+    public function validateZona(Request $request)
+    {
+        $request->validate([
+            'lokasi' => 'required|string',
+            'zona_id' => 'required|integer|exists:zona_wilayah,id',
+        ]);
+
+        $isValid = $this->zonaValidationService->validateLokasi($request->lokasi, $request->zona_id);
+
+        return response()->json([
+            'is_valid' => $isValid,
+            'message' => $isValid ? 'Lokasi sesuai dengan zona.' : 'Peringatan: Lokasi Anda tampaknya berada di luar zona yang dipilih.'
+        ]);
     }
 }

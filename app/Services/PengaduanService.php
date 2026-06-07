@@ -34,13 +34,29 @@ class PengaduanService
                 $fotoBukti = $data['foto_bukti']->store('uploads/pengaduan', 'public');
             }
 
-            // 2. Buat pengaduan
+            // 2. Buat pengaduan — validasi zona berdasarkan koordinat jika ada, fallback ke teks
+            $hasCoords = isset($data['latitude']) && isset($data['longitude'])
+                && $data['latitude'] !== null && $data['longitude'] !== null;
+
+            if ($hasCoords) {
+                // Validasi spasial (Point-in-Polygon) — lebih akurat
+                $isZonaValid = app(\App\Services\ZonaValidationService::class)
+                    ->validateByCoordinates((float) $data['latitude'], (float) $data['longitude'], $data['zona_id']);
+            } else {
+                // Fallback: validasi berbasis kata kunci teks
+                $isZonaValid = app(\App\Services\ZonaValidationService::class)
+                    ->validateLokasi($data['lokasi'], $data['zona_id']);
+            }
+
             $pengaduan = Pengaduan::create([
                 'nomor_tiket'       => Pengaduan::generateNomorTiket(),
                 'user_id'           => $pelapor->id,
                 'kategori_id'       => $data['kategori_id'],
                 'zona_id'           => $data['zona_id'],
+                'is_zona_valid'     => $isZonaValid,
                 'lokasi'            => $data['lokasi'],
+                'latitude'          => $data['latitude'] ?? null,
+                'longitude'         => $data['longitude'] ?? null,
                 'deskripsi'         => $data['deskripsi'],
                 'foto_bukti'        => $fotoBukti,
                 'status'            => 'menunggu_verifikasi',
@@ -78,10 +94,11 @@ class PengaduanService
 
             // 4. Kirim notifikasi ke pelapor
             $this->notifikasiService->kirim(
-                $pelapor,
-                $pengaduan,
+                $pelapor->id,
+                $pengaduan->id,
                 'Pengaduan Diterima',
-                "Nomor tiket {$pengaduan->nomor_tiket} telah diterima dan sedang menunggu verifikasi."
+                "Nomor tiket {$pengaduan->nomor_tiket} telah diterima dan sedang menunggu verifikasi.",
+                'status_berubah'
             );
 
             return $pengaduan;
@@ -106,10 +123,11 @@ class PengaduanService
             $this->catatStatusLog($pengaduan, $supervisor, $statusLama, 'disetujui', 'Pengaduan disetujui supervisor.');
 
             $this->notifikasiService->kirim(
-                $pengaduan->pelapor,
-                $pengaduan,
+                $pengaduan->pelapor->id,
+                $pengaduan->id,
                 'Pengaduan Disetujui',
-                "Pengaduan #{$pengaduan->nomor_tiket} telah disetujui dan sedang dicari petugas yang tepat."
+                "Pengaduan #{$pengaduan->nomor_tiket} telah disetujui dan sedang dicari petugas yang tepat.",
+                'status_berubah'
             );
         });
     }
@@ -132,10 +150,11 @@ class PengaduanService
             $this->catatStatusLog($pengaduan, $supervisor, $statusLama, 'ditolak', $alasan);
 
             $this->notifikasiService->kirim(
-                $pengaduan->pelapor,
-                $pengaduan,
+                $pengaduan->pelapor->id,
+                $pengaduan->id,
                 'Pengaduan Ditolak',
-                "Pengaduan #{$pengaduan->nomor_tiket} ditolak. Alasan: {$alasan}"
+                "Pengaduan #{$pengaduan->nomor_tiket} ditolak. Alasan: {$alasan}",
+                'status_berubah'
             );
         });
     }

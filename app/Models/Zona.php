@@ -20,16 +20,26 @@ class Zona extends Model
 
     protected $fillable = [
         'nama_zona',
+        'kode_zona',
         'deskripsi',
+        'geo_boundary',
         'is_active',
     ];
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = [
+        'is_active' => 'boolean',
+        'geo_boundary' => 'array',
+    ];
 
     public function petugas()
     {
         // Relasi many-to-many: zona bisa punya banyak petugas
-        return $this->belongsToMany(Petugas::class, 'zona_petugas');
+        return $this->belongsToMany(Petugas::class, 'officer_zone', 'zone_id', 'officer_id');
+    }
+
+    public function officers()
+    {
+        return $this->belongsToMany(Petugas::class, 'officer_zone', 'zone_id', 'officer_id');
     }
 
     public function pengaduans()

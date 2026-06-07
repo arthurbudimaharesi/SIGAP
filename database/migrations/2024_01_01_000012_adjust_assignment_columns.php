@@ -21,27 +21,77 @@ return new class extends Migration
 {
     public function up(): void
     {
+<<<<<<< Updated upstream
+        // Gunakan raw SQL karena renameColumn() butuh MariaDB 10.5.2+ atau doctrine/dbal
+        DB::statement("ALTER TABLE `assignment`
+            CHANGE `assigned_by`      `supervisor_id`       BIGINT UNSIGNED NOT NULL,
+            CHANGE `catatan_petugas`  `catatan_penanganan`  TEXT NULL,
+            CHANGE `foto_penanganan`  `foto_hasil`          VARCHAR(255) NULL,
+            CHANGE `timestamp_selesai` `tanggal_selesai`    TIMESTAMP NULL
+        ");
+
+        // Update enum value: sedang_diproses → diproses
+        DB::statement("ALTER TABLE `assignment` MODIFY COLUMN `status_assignment` ENUM('ditugaskan', 'diproses', 'selesai') DEFAULT 'ditugaskan'");
+=======
+        // SQLite requires separate rename operations
         Schema::table('assignment', function (Blueprint $table) {
             $table->renameColumn('assigned_by', 'supervisor_id');
+        });
+
+        Schema::table('assignment', function (Blueprint $table) {
             $table->renameColumn('catatan_petugas', 'catatan_penanganan');
+        });
+
+        Schema::table('assignment', function (Blueprint $table) {
             $table->renameColumn('foto_penanganan', 'foto_hasil');
+        });
+
+        Schema::table('assignment', function (Blueprint $table) {
             $table->renameColumn('timestamp_selesai', 'tanggal_selesai');
         });
 
         // Update enum value: sedang_diproses → diproses
-        // MySQL requires ALTER to change enum values
-        DB::statement("ALTER TABLE assignment MODIFY COLUMN status_assignment ENUM('ditugaskan', 'diproses', 'selesai') DEFAULT 'ditugaskan'");
+        // Only for MySQL
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE assignment MODIFY COLUMN status_assignment ENUM('ditugaskan', 'diproses', 'selesai') DEFAULT 'ditugaskan'");
+        }
+>>>>>>> Stashed changes
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE assignment MODIFY COLUMN status_assignment ENUM('ditugaskan', 'sedang_diproses', 'selesai') DEFAULT 'ditugaskan'");
+<<<<<<< Updated upstream
+        DB::statement("ALTER TABLE `assignment` MODIFY COLUMN `status_assignment` ENUM('ditugaskan', 'sedang_diproses', 'selesai') DEFAULT 'ditugaskan'");
+
+        // Kembalikan nama kolom menggunakan raw SQL
+        DB::statement("ALTER TABLE `assignment`
+            CHANGE `supervisor_id`       `assigned_by`       BIGINT UNSIGNED NOT NULL,
+            CHANGE `catatan_penanganan`  `catatan_petugas`   TEXT NULL,
+            CHANGE `foto_hasil`          `foto_penanganan`   VARCHAR(255) NULL,
+            CHANGE `tanggal_selesai`     `timestamp_selesai` TIMESTAMP NULL
+        ");
+=======
+        // Reverse renames
+        Schema::table('assignment', function (Blueprint $table) {
+            $table->renameColumn('tanggal_selesai', 'timestamp_selesai');
+        });
+
+        Schema::table('assignment', function (Blueprint $table) {
+            $table->renameColumn('foto_hasil', 'foto_penanganan');
+        });
+
+        Schema::table('assignment', function (Blueprint $table) {
+            $table->renameColumn('catatan_penanganan', 'catatan_petugas');
+        });
 
         Schema::table('assignment', function (Blueprint $table) {
             $table->renameColumn('supervisor_id', 'assigned_by');
-            $table->renameColumn('catatan_penanganan', 'catatan_petugas');
-            $table->renameColumn('foto_hasil', 'foto_penanganan');
-            $table->renameColumn('tanggal_selesai', 'timestamp_selesai');
         });
+
+        // Revert enum (MySQL only)
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE assignment MODIFY COLUMN status_assignment ENUM('ditugaskan', 'sedang_diproses', 'selesai') DEFAULT 'ditugaskan'");
+        }
+>>>>>>> Stashed changes
     }
 };

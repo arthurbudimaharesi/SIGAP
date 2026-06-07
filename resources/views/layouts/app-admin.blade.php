@@ -28,6 +28,7 @@
             background: linear-gradient(135deg, #022448 0%, #1e3a5f 100%);
         }
     </style>
+    @stack('styles')
 </head>
 <body class="bg-gray-50 font-body text-gray-900 antialiased">
     <div x-data="{
@@ -115,7 +116,7 @@
                             </button>
 
                             <div x-show="showProfileDropdown" @click.outside="showProfileDropdown = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
-                                <a href="{{ route('profile.edit') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100">Edit Profil</a>
+                                <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100">Edit Profil</a>
                                 <form method="POST" action="{{ route('logout') }}" class="block" data-confirm="Yakin ingin logout dari akun ini?">
                                     @csrf
                                     <button type="submit" class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50">Logout</button>
@@ -169,9 +170,14 @@
                         <span>Kategori & SLA</span>
                     </a>
 
-                    <a href="#" :class="isactive('/admin/zona') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                    <a href="{{ route('admin.zona.index') }}" :class="isactive('/admin/zona') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                         <span class="material-symbols-outlined text-xl">location_on</span>
                         <span>Zona Wilayah</span>
+                    </a>
+
+                    <a href="{{ route('admin.announcements.index') }}" :class="isactive('/admin/announcements') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                        <span class="material-symbols-outlined text-xl">campaign</span>
+                        <span>Pengumuman</span>
                     </a>
 
                     <p class="text-xs text-blue-300/60 uppercase tracking-wider font-semibold px-4 mt-6 mb-3">Pengaturan</p>
@@ -181,7 +187,7 @@
                         <span>Manajemen User</span>
                     </a>
 
-                    <a href="#" :class="isactive('/admin/petugas') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                    <a href="{{ route('admin.petugas.index') }}" :class="isactive('/admin/petugas') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                         <span class="material-symbols-outlined text-xl">engineering</span>
                         <span>Data Petugas</span>
                     </a>
@@ -218,5 +224,6 @@
     </div>
 
     @include('layouts.partials.flash-message')
+    @stack('scripts')
 </body>
 </html>
