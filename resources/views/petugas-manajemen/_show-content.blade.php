@@ -67,22 +67,15 @@
                     <a href="{{ route('admin.petugas.edit', $petugas) }}"
                        class="px-4 py-2 bg-[#022448] text-white text-sm font-semibold rounded-xl">Edit Data</a>
                 @endunless
-                @php
-                    $isAktif = in_array($petugas->status_tersedia, ['tersedia', 'sibuk']);
-                    $toggleStatus = $isAktif ? 'tidak_aktif' : 'tersedia';
-                    $toggleLabel  = $isAktif ? 'Nonaktifkan' : 'Aktifkan';
-                    $toggleClass  = $isAktif
-                        ? 'bg-red-50 text-red-700 border border-red-200'
-                        : 'bg-emerald-50 text-emerald-700 border border-emerald-200';
-                @endphp
-                <form action="{{ route($routePrefix . '.update-status', $petugas) }}" method="POST">
-                    @csrf
-                    @method('PATCH')
-                    <input type="hidden" name="status_tersedia" value="{{ $toggleStatus }}">
-                    <button type="submit" class="px-4 py-2 text-sm font-semibold rounded-xl {{ $toggleClass }}">
-                        {{ $toggleLabel }} Petugas
-                    </button>
-                </form>
+
+                {{-- Tombol Ubah Status (tersedia untuk Admin & Supervisor) --}}
+                <button type="button"
+                        onclick="openStatusModal({{ $petugas->id }}, @js($petugas->user?->name ?? 'Petugas'), @js($petugas->status_tersedia))"
+                        class="px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 text-sm font-semibold rounded-xl hover:bg-amber-100 transition flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">swap_horiz</span>
+                    Ubah Status
+                </button>
+
                 <a href="{{ route($routePrefix . '.index') }}"
                    class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl">Kembali</a>
             </div>
@@ -137,6 +130,9 @@
                         <tr class="text-xs text-gray-500 uppercase border-b border-gray-100">
                             <th class="py-2 text-left">Tiket</th>
                             <th class="py-2 text-left">Kategori</th>
+                            @if ($routePrefix === 'supervisor.petugas')
+                                <th class="py-2 text-left">Catatan Assignment</th>
+                            @endif
                             <th class="py-2 text-center">Status</th>
                             <th class="py-2 text-left">Tanggal</th>
                         </tr>
@@ -162,6 +158,15 @@
                                 <td class="py-3 text-gray-600">
                                     {{ $assignment->pengaduan?->kategori?->nama_kategori ?? '—' }}
                                 </td>
+                                @if ($routePrefix === 'supervisor.petugas')
+                                    <td class="max-w-[200px] py-3 text-xs text-gray-600">
+                                        @if ($assignment->instruksi)
+                                            <span title="{{ $assignment->instruksi }}">{{ Str::limit($assignment->instruksi, 50) }}</span>
+                                        @else
+                                            <span class="text-gray-400">—</span>
+                                        @endif
+                                    </td>
+                                @endif
                                 <td class="py-3 text-center">
                                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $asnCfg[$assignment->status_assignment] ?? 'bg-gray-100 text-gray-600' }}">
                                         {{ $asnLbl[$assignment->status_assignment] ?? $assignment->status_assignment }}

@@ -63,11 +63,11 @@ class PenangananController extends Controller
         abort_if($tugas->petugas_id !== auth()->user()->petugas?->id, 403);
 
         $tugas->load([
+            'supervisor',
             'pengaduan.kategori',
             'pengaduan.zona',
             'pengaduan.pelapor',
             'pengaduan.sla',
-            'pengaduan.statusLogs.user',
         ]);
         return view('petugas.tugas.show', compact('tugas'));
     }
