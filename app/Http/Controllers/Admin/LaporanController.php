@@ -23,10 +23,10 @@ class LaporanController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $data = $this->laporanService->getRekap(
-            $request->only(['dari', 'sampai', 'zona_id', 'kategori_id', 'status'])
-        );
+        $filter = $request->only(['dari', 'sampai', 'zona_id', 'kategori_id', 'status']);
+        $data = $this->laporanService->getRekap($filter);
+        $filename = $this->laporanService->buildRekapExportFilename($filter);
 
-        return view('supervisor.laporan.rekap-pdf', compact('data'));
+        return view('supervisor.laporan.rekap-pdf', compact('data', 'filename'));
     }
 }

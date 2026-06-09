@@ -73,7 +73,7 @@
     </form>
 
     {{-- Summary Cards --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
         <div class="bg-white rounded-xl shadow p-4 text-center">
             <div class="text-2xl font-black text-gray-800">{{ $data['total'] }}</div>
             <div class="text-xs text-gray-500 mt-1">Total Pengaduan</div>
@@ -85,10 +85,6 @@
         <div class="bg-white rounded-xl shadow p-4 text-center">
             <div class="text-2xl font-black text-red-700">{{ $data['total_overdue'] }}</div>
             <div class="text-xs text-gray-500 mt-1">Overdue</div>
-        </div>
-        <div class="bg-white rounded-xl shadow p-4 text-center">
-            <div class="text-2xl font-black text-blue-700">{{ $data['rata_waktu_jam'] ?? '—' }}</div>
-            <div class="text-xs text-gray-500 mt-1">Rata-rata Waktu (Jam)</div>
         </div>
     </div>
 

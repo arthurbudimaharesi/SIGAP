@@ -60,6 +60,27 @@ class LaporanService
     }
 
     /**
+     * Nama file export PDF: laporan_rekap_[periode]_[tanggal_export].pdf
+     */
+    public function buildRekapExportFilename(array $filter): string
+    {
+        $periode = 'semua';
+
+        if (! empty($filter['dari']) && ! empty($filter['sampai'])) {
+            $periode = Carbon::parse($filter['dari'])->format('Ymd')
+                . '-' . Carbon::parse($filter['sampai'])->format('Ymd');
+        } elseif (! empty($filter['dari'])) {
+            $periode = Carbon::parse($filter['dari'])->format('Ymd') . '-sekarang';
+        } elseif (! empty($filter['sampai'])) {
+            $periode = 'awal-' . Carbon::parse($filter['sampai'])->format('Ymd');
+        }
+
+        $tanggalExport = now()->format('Ymd');
+
+        return "laporan_rekap_{$periode}_{$tanggalExport}.pdf";
+    }
+
+    /**
      * Data kinerja per petugas untuk laporan admin.
      */
     public function getKinerja(array $filter = []): array
