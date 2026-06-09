@@ -38,7 +38,6 @@
         showProfileDropdown: false,
         init() {
             this.fetchNotifications();
-            setInterval(() => this.fetchNotifications(), 30000);
         },
         async fetchNotifications() {
             try {

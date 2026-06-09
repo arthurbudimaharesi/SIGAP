@@ -39,6 +39,7 @@
         />
     </div>
 
+<<<<<<< Updated upstream
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div class="lg:col-span-1">
             <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -82,6 +83,87 @@
                 @else
                     <form method="POST" action="{{ route('supervisor.assignment.store', $pengaduan) }}" data-confirm="Yakin ingin menugaskan petugas ini?">
                         @csrf
+=======
+    <div
+        class="mb-6"
+        x-data="petugasMonitor({
+            pollUrl: @js($pollUrl),
+            initial: @js([
+                'summary' => $monitorSummary,
+                'petugas' => $petugasRows->values(),
+                'selectedId' => old('petugas_id') ? (int) old('petugas_id') : null,
+            ]),
+        })"
+    >
+        <div class="rounded-2xl border border-gray-100 bg-white shadow-sm p-4">
+            <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <h2 class="font-bold text-gray-800">Monitor Status Petugas</h2>
+                    <p class="mt-0.5 text-xs text-gray-500">
+                        Zona {{ $pengaduan->zona->nama_zona }} ·
+                        <span class="font-medium text-emerald-600">Live</span>
+                        <span x-text="' · ' + lastUpdated" class="text-gray-400"></span>
+                    </p>
+                </div>
+                <a href="{{ route('supervisor.petugas.index', ['zona_id' => $pengaduan->zona_id]) }}"
+                   class="text-xs font-semibold text-[#0F4C81] hover:underline">Lihat data petugas</a>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div class="rounded-xl border border-emerald-100 bg-emerald-50/60 px-3 py-2 text-center">
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-emerald-700">Tersedia</p>
+                    <p class="text-xl font-black text-emerald-700" x-text="summary.tersedia"></p>
+                </div>
+                <div class="rounded-xl border border-amber-100 bg-amber-50/60 px-3 py-2 text-center">
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-amber-700">Sibuk</p>
+                    <p class="text-xl font-black text-amber-700" x-text="summary.sibuk"></p>
+                </div>
+                <div class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-center">
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-gray-600">Tidak Aktif</p>
+                    <p class="text-xl font-black text-gray-600" x-text="summary.tidak_aktif"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="lg:col-span-1">
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                    <h2 class="mb-4 font-semibold text-gray-800">Info Pengaduan</h2>
+                    <dl class="space-y-2 text-sm">
+                        <div>
+                            <dt class="text-gray-500">No. Tiket</dt>
+                            <dd class="font-mono font-bold text-[#022448]">{{ $pengaduan->nomor_tiket }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">Kategori</dt>
+                            <dd class="font-semibold">{{ $pengaduan->kategori->nama_kategori }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">Zona</dt>
+                            <dd class="font-semibold flex items-center flex-wrap gap-2">
+                                {{ $pengaduan->zona->nama_zona }}
+                                @if($pengaduan->is_zona_valid === 1)
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700" title="Validasi otomatis: Sesuai">
+                                        <span class="material-symbols-outlined text-[14px]">verified</span> Valid
+                                    </span>
+                                @elseif($pengaduan->is_zona_valid === 0)
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-700" title="Validasi otomatis: Peringatan (Mungkin tidak sesuai)">
+                                        <span class="material-symbols-outlined text-[14px]">warning</span> Warning
+                                    </span>
+                                @endif
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">Lokasi</dt>
+                            <dd>{{ $pengaduan->lokasi }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">SLA</dt>
+                            <dd class="font-semibold text-amber-600">{{ $pengaduan->kategori->sla_jam }} jam</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+>>>>>>> Stashed changes
 
                         <div class="mb-5">
                             <label class="mb-2 block text-sm font-semibold text-gray-700">

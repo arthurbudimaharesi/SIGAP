@@ -39,7 +39,6 @@
         showProfileDropdown: false,
         init() {
             this.fetchNotifications();
-            setInterval(() => this.fetchNotifications(), 30000);
         },
         async fetchNotifications() {
             try {
@@ -172,6 +171,7 @@
                         <span>Semua Pengaduan</span>
                     </a>
 
+<<<<<<< Updated upstream
                     <a href="#" :class="isactive('/supervisor/assignment') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                         <span class="material-symbols-outlined text-xl">assignment_ind</span>
                         <span>Assignment</span>
@@ -180,6 +180,17 @@
                             <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                         </svg>
                         <span>Monitor Petugas</span>
+=======
+                    <a href="{{ route('supervisor.assignment.index') }}" :class="isactive('/supervisor/assignment') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                        <span class="material-symbols-outlined text-xl">assignment_ind</span>
+                        <span>Assignment</span>
+                    </a>
+
+
+                    <a href="{{ route('supervisor.petugas.index') }}" :class="isactive('/supervisor/petugas') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                        <span class="material-symbols-outlined text-xl">badge</span>
+                        <span>Data Petugas</span>
+>>>>>>> Stashed changes
                     </a>
 
                     <p class="text-xs text-blue-300/60 uppercase tracking-wider font-semibold px-4 mt-6 mb-3">Laporan & Monitor</p>

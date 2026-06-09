@@ -25,6 +25,15 @@ class AssignmentController extends Controller
         private PetugasMonitoringService $monitoringService,
     ) {}
 
+    public function index()
+    {
+        $pengaduans = Pengaduan::with(['pelapor', 'kategori', 'zona'])
+            ->byStatus('disetujui')
+            ->latest()
+            ->paginate(10);
+        return view('supervisor.assignment.index', compact('pengaduans'));
+    }
+
     public function create(Pengaduan $pengaduan)
     {
         $pengaduan->load(['kategori', 'zona']);
@@ -68,7 +77,11 @@ class AssignmentController extends Controller
             ]);
         }
 
+<<<<<<< Updated upstream
         $this->assignmentService->tugaskan($pengaduan, $request->validated(), auth()->user());
+=======
+        $this->assignmentService->tugaskan($pengaduan, $data, auth()->user());
+>>>>>>> Stashed changes
 
         return redirect()->route('supervisor.verifikasi.index')
             ->with('success', 'Petugas berhasil ditugaskan.');
