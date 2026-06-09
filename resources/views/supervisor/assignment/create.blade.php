@@ -111,6 +111,60 @@
             </div>
         </div>
 
+        <div class="lg:col-span-2">
+            <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                @if ($petugasTersedia === 0)
+                    <div class="rounded-xl border border-dashed border-amber-200 bg-amber-50 py-10 text-center text-amber-800">
+                        <p class="font-semibold">Tidak ada petugas Available di zona ini.</p>
+                        <p class="mt-1 text-sm">Tunggu petugas selesai tugas (On-Duty → Available) atau hubungi admin untuk mengaktifkan petugas Off.</p>
+                        <a href="{{ route('supervisor.monitor-petugas.index', ['zona_id' => $pengaduan->zona_id]) }}"
+                           class="mt-4 inline-block text-sm font-semibold text-[#0F4C81] hover:underline">
+                            Buka monitor petugas
+                        </a>
+                    </div>
+                @else
+                    <form method="POST" action="{{ route('supervisor.assignment.store', $pengaduan) }}" data-confirm="Yakin ingin menugaskan petugas ini?">
+                        @csrf
+    <div
+        class="mb-6"
+        x-data="petugasMonitor({
+            pollUrl: @js($pollUrl),
+            initial: @js([
+                'summary' => $monitorSummary,
+                'petugas' => $petugasRows->values(),
+                'selectedId' => old('petugas_id') ? (int) old('petugas_id') : null,
+            ]),
+        })"
+    >
+        <div class="rounded-2xl border border-gray-100 bg-white shadow-sm p-4">
+            <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <h2 class="font-bold text-gray-800">Monitor Status Petugas</h2>
+                    <p class="mt-0.5 text-xs text-gray-500">
+                        Zona {{ $pengaduan->zona->nama_zona }} ·
+                        <span class="font-medium text-emerald-600">Live</span>
+                        <span x-text="' · ' + lastUpdated" class="text-gray-400"></span>
+                    </p>
+                </div>
+                <a href="{{ route('supervisor.petugas.index', ['zona_id' => $pengaduan->zona_id]) }}"
+                   class="text-xs font-semibold text-[#0F4C81] hover:underline">Lihat data petugas</a>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div class="rounded-xl border border-emerald-100 bg-emerald-50/60 px-3 py-2 text-center">
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-emerald-700">Tersedia</p>
+                    <p class="text-xl font-black text-emerald-700" x-text="summary.tersedia"></p>
+                </div>
+                <div class="rounded-xl border border-amber-100 bg-amber-50/60 px-3 py-2 text-center">
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-amber-700">Sibuk</p>
+                    <p class="text-xl font-black text-amber-700" x-text="summary.sibuk"></p>
+                </div>
+                <div class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-center">
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-gray-600">Tidak Aktif</p>
+                    <p class="text-xl font-black text-gray-600" x-text="summary.tidak_aktif"></p>
+                </div>
+            </div>
+        </div>
+
         <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div class="lg:col-span-1">
                 <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -119,6 +173,51 @@
                         <div>
                             <dt class="text-gray-500">No. Tiket</dt>
                             <dd class="font-mono font-bold text-[#022448]">{{ $pengaduan->nomor_tiket }}</dd>
+                        <div class="mb-5">
+                            <label class="mb-2 block text-sm font-semibold text-gray-700">
+                                Pilih Petugas <span class="text-red-500">*</span>
+                            </label>
+                            <div class="space-y-2">
+                                @foreach ($petugasRows as $row)
+                                    @php
+                                        $selectable = $row['dapat_dipilih'];
+                                        $inputId = 'petugas_' . $row['id'];
+                                    @endphp
+                                    <label
+                                        for="{{ $inputId }}"
+                                        class="flex items-center gap-3 rounded-xl border p-3 transition
+                                            {{ $selectable ? 'cursor-pointer border-gray-200 hover:bg-gray-50 has-[:checked]:border-[#022448] has-[:checked]:bg-[#022448]/5' : 'cursor-not-allowed border-gray-100 bg-gray-50 opacity-70' }}"
+                                    >
+                                        <input
+                                            type="radio"
+                                            id="{{ $inputId }}"
+                                            name="petugas_id"
+                                            value="{{ $row['id'] }}"
+                                            class="accent-blue-600"
+                                            @disabled(! $selectable)
+                                            @checked(old('petugas_id') == $row['id'])
+                                            @required($selectable && $loop->first && ! old('petugas_id'))
+                                        >
+                                        <div class="min-w-0 flex-1">
+                                            <p class="font-semibold text-gray-800">{{ $row['nama'] }}</p>
+                                            <p class="text-xs text-gray-500">
+                                                NIP: {{ $row['nip'] }}
+                                                @if ($row['tugas_aktif'] > 0)
+                                                    · {{ $row['tugas_aktif'] }} tugas aktif
+                                                @endif
+                                            </p>
+                                        </div>
+                                        <x-petugas-status-badge :status-key="$row['status_key']" />
+                                    </label>
+                                @endforeach
+                            </div>
+                            @error('petugas_id')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
+                            <p class="mt-2 text-xs text-gray-500">
+                                Petugas <strong>Off</strong> dan <strong>On-Duty</strong> ditampilkan untuk monitoring tetapi tidak dapat dipilih.
+                            </p>
+
                         </div>
                         <div>
                             <dt class="text-gray-500">Kategori</dt>

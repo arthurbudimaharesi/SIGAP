@@ -30,6 +30,11 @@ class ManajemenPetugasController extends Controller
         $data = $this->manajemenService->indexData($request);
 
         return view('supervisor.petugas.index', array_merge($data, [
+            'readOnly'    => true,           // sembunyikan Edit & Hapus
+            'routePrefix' => 'supervisor.petugas',
+            'readOnly'          => true,
+            'routePrefix'       => 'supervisor.petugas',
+            'showCatatanInfo'   => true,
             'readOnly'        => true,
             'routePrefix'     => 'supervisor.petugas',
             'showCatatanInfo' => true,
@@ -51,6 +56,7 @@ class ManajemenPetugasController extends Controller
             ->withQueryString();
 
         $kinerja = $this->manajemenService->getKinerjaPetugas($petugas);
+
         $pengaduanMenungguTugas = $this->pengaduanSiapDitugaskanUntukPetugas($petugas);
 
         return view('supervisor.petugas.show', compact(

@@ -124,6 +124,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/filter/export-csv', [FilterPengaduanController::class, 'exportCsv'])->name('filter.export-csv');
         Route::get('/pengaduan/{pengaduan}', [FilterPengaduanController::class, 'show'])->name('pengaduan.show');
 
+        Route::get('/assignment', [AssignmentController::class, 'index'])->name('assignment.index');
         Route::get('/assignment/{pengaduan}/create', [AssignmentController::class, 'create'])->name('assignment.create');
         Route::post('/assignment/{pengaduan}', [AssignmentController::class, 'store'])->name('assignment.store');
 
