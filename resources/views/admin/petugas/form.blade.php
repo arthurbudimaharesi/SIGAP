@@ -40,6 +40,10 @@
                            class="w-full border rounded-lg px-3 py-2">
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">NIP (No. Pegawai) <span class="text-red-500">*</span></label>
+                    <input type="text" name="nip" value="{{ old('nip', $petugas?->nip) }}"
+                           placeholder="PTG-0001" class="w-full border rounded-lg px-3 py-2" required>
+                    @error('nip') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     <label class="block text-sm font-medium text-gray-700 mb-1">NIP <span class="text-xs text-gray-400 font-normal">(Auto Generated)</span></label>
                     @if(isset($petugas))
                         <div class="w-full border rounded-lg px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed">{{ $petugas->nip ?? '—' }}</div>
@@ -76,9 +80,9 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Status Ketersediaan <span class="text-red-500">*</span></label>
-                    <select name="status_ketersediaan" class="w-full border rounded-lg px-3 py-2" required>
+                    <select name="status_tersedia" class="w-full border rounded-lg px-3 py-2" required>
                         @foreach (['tersedia'=>'Tersedia','sibuk'=>'Sibuk','tidak_aktif'=>'Tidak Aktif'] as $val => $lab)
-                        <option value="{{ $val }}" {{ old('status_ketersediaan', $petugas?->status_ketersediaan) === $val ? 'selected':'' }}>{{ $lab }}</option>
+                        <option value="{{ $val }}" {{ old('status_tersedia', $petugas?->status_tersedia) === $val ? 'selected':'' }}>{{ $lab }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -86,6 +90,13 @@
 
             {{-- Assignment Zona --}}
             <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Zona Wilayah <span class="text-red-500">*</span></label>
+                <select name="zona_id" class="w-full border rounded-lg px-3 py-2" required>
+                    <option value="" disabled selected>-- Pilih Zona Wilayah --</option>
+                    @foreach ($zonas as $zona)
+                    <option value="{{ $zona->id }}" {{ old('zona_id', $petugas?->zona_id) == $zona->id ? 'selected' : '' }}>
+                        {{ $zona->nama_zona }}
+                    </option>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Zona Wilayah</label>
                 <select name="zona_id" class="w-full border rounded-lg px-3 py-2">
                     <option value="">-- Pilih Zona Wilayah --</option>
