@@ -34,6 +34,12 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
+    // Route profil global (dipakai oleh semua layout/navbar)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
     // GLOBAL NOTIFIKASI
     Route::get('/notifikasi', [\App\Http\Controllers\NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::get('/notifikasi/count', [\App\Http\Controllers\NotifikasiController::class, 'count'])->name('notifikasi.count');
@@ -102,11 +108,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/sla', [AdminSlaController::class, 'index'])->name('sla.index');
 
         Route::resource('users', UserController::class);
+        Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
 
         Route::resource('petugas', PetugasController::class);
         Route::patch('petugas/{petugas}/status', [PetugasController::class, 'updateStatus'])->name('petugas.update-status');
 
         Route::resource('zona', ZonaController::class);
+
+        Route::resource('pelanggan', \App\Http\Controllers\Admin\PelangganController::class);
+        Route::resource('kategori', \App\Http\Controllers\Admin\KategoriController::class)->except(['show']);
     });
 
     // Shared

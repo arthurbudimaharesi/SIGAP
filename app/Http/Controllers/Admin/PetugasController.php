@@ -6,24 +6,58 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\{User, Petugas, Zona};
+use App\Models\{User, Petugas, ZonaWilayah};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{DB, Hash};
 
 class PetugasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $petugas = Petugas::with(['user', 'zonas'])
-            ->latest()
-            ->paginate(15);
+        $query = Petugas::with(['user', 'zona'])
+            ->whereHas('user', function ($q) {
+                $q->where('role', 'petugas');
+            });
 
-        return view('admin.petugas.index', compact('petugas'));
+        // Filter search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nip', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter status
+        if ($request->filled('status')) {
+            $query->where('status_tersedia', $request->status);
+        }
+
+        // Filter zona
+        if ($request->filled('zona')) {
+            $query->where('zona_id', $request->zona);
+        }
+
+        $petugas = $query->latest()->paginate(10)->withQueryString();
+
+        $stats = [
+            'total' => Petugas::count(),
+            'tersedia' => Petugas::where('status_tersedia', 'tersedia')->count(),
+            'sibuk' => Petugas::where('status_tersedia', 'sibuk')->count(),
+            'tidak_aktif' => Petugas::where('status_tersedia', 'tidak_aktif')->count(),
+        ];
+
+        $zonas = ZonaWilayah::where('is_active', true)->orderBy('nama_zona')->get();
+
+        return view('admin.petugas.index', compact('petugas', 'stats', 'zonas'));
     }
 
     public function create()
     {
-        $zonas = Zona::where('is_active', true)->get();
+        $zonas = ZonaWilayah::where('is_active', true)->orderBy('nama_zona')->get();
         return view('admin.petugas.form', compact('zonas'));
     }
 
@@ -34,13 +68,12 @@ class PetugasController extends Controller
             'email'                => 'required|email|unique:users,email',
             'password'             => 'required|string|min:8|confirmed',
             'no_telepon'           => 'nullable|string|max:20',
-            'nomor_pegawai'        => 'required|string|unique:petugas,nomor_pegawai',
-            'status_ketersediaan'  => 'required|in:tersedia,sibuk,tidak_aktif',
-            'zona_ids'             => 'array',
-            'zona_ids.*'           => 'exists:zonas,id',
+            'nip'                  => 'required|string|unique:petugas,nip',
+            'status_tersedia'      => 'required|in:tersedia,sibuk,tidak_aktif',
+            'zona_id'              => 'required|exists:zona_wilayah,id',
         ], [
             'email.unique'          => 'Email sudah digunakan.',
-            'nomor_pegawai.unique'  => 'Nomor pegawai sudah terdaftar.',
+            'nip.unique'            => 'NIP sudah terdaftar.',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -55,16 +88,12 @@ class PetugasController extends Controller
             ]);
 
             // 2. Buat record petugas
-            $petugas = Petugas::create([
+            Petugas::create([
                 'user_id'              => $user->id,
-                'nomor_pegawai'        => $request->nomor_pegawai,
-                'status_ketersediaan'  => $request->status_ketersediaan,
+                'nip'                  => $request->nip,
+                'status_tersedia'      => $request->status_tersedia,
+                'zona_id'              => $request->zona_id,
             ]);
-
-            // 3. Sync zona assignment
-            if ($request->filled('zona_ids')) {
-                $petugas->zonas()->sync($request->zona_ids);
-            }
         });
 
         return redirect()
@@ -74,8 +103,8 @@ class PetugasController extends Controller
 
     public function edit(Petugas $petugas)
     {
-        $petugas->load(['user', 'zonas']);
-        $zonas = Zona::where('is_active', true)->get();
+        $petugas->load(['user', 'zona']);
+        $zonas = ZonaWilayah::where('is_active', true)->orderBy('nama_zona')->get();
         return view('admin.petugas.form', compact('petugas', 'zonas'));
     }
 
@@ -85,10 +114,9 @@ class PetugasController extends Controller
             'name'                => 'required|string|max:255',
             'email'               => 'required|email|unique:users,email,' . $petugas->user_id,
             'no_telepon'          => 'nullable|string|max:20',
-            'nomor_pegawai'       => 'required|string|unique:petugas,nomor_pegawai,' . $petugas->id,
-            'status_ketersediaan' => 'required|in:tersedia,sibuk,tidak_aktif',
-            'zona_ids'            => 'array',
-            'zona_ids.*'          => 'exists:zonas,id',
+            'nip'                 => 'required|string|unique:petugas,nip,' . $petugas->id,
+            'status_tersedia'     => 'required|in:tersedia,sibuk,tidak_aktif',
+            'zona_id'             => 'required|exists:zona_wilayah,id',
             'password'            => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -105,11 +133,10 @@ class PetugasController extends Controller
 
             $petugas->user->update($userData);
             $petugas->update([
-                'nomor_pegawai'       => $request->nomor_pegawai,
-                'status_ketersediaan' => $request->status_ketersediaan,
+                'nip'                 => $request->nip,
+                'status_tersedia'     => $request->status_tersedia,
+                'zona_id'             => $request->zona_id,
             ]);
-
-            $petugas->zonas()->sync($request->zona_ids ?? []);
         });
 
         return redirect()
@@ -121,7 +148,7 @@ class PetugasController extends Controller
     {
         // Cegah hapus petugas yang punya tugas aktif
         $adalahAktif = $petugas->assignments()
-            ->whereIn('status_assignment', ['ditugaskan', 'diproses'])
+            ->whereIn('status_assignment', ['ditugaskan', 'sedang_diproses'])
             ->exists();
 
         if ($adalahAktif) {
@@ -129,9 +156,8 @@ class PetugasController extends Controller
         }
 
         DB::transaction(function () use ($petugas) {
-            $petugas->zonas()->detach();
-            $petugas->user->update(['is_active' => false, 'role' => 'petugas']);
-            $petugas->update(['status_ketersediaan' => 'tidak_aktif']);
+            $petugas->user->update(['is_active' => false]);
+            $petugas->update(['status_tersedia' => 'tidak_aktif', 'zona_id' => null]);
         });
 
         return redirect()

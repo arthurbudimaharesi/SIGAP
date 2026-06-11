@@ -34,10 +34,10 @@
                            class="w-full border rounded-lg px-3 py-2">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">No. Pegawai <span class="text-red-500">*</span></label>
-                    <input type="text" name="nomor_pegawai" value="{{ old('nomor_pegawai', $petugas?->nomor_pegawai) }}"
+                    <label class="block text-sm font-medium text-gray-700 mb-1">NIP (No. Pegawai) <span class="text-red-500">*</span></label>
+                    <input type="text" name="nip" value="{{ old('nip', $petugas?->nip) }}"
                            placeholder="PTG-0001" class="w-full border rounded-lg px-3 py-2" required>
-                    @error('nomor_pegawai') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    @error('nip') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Password {{ isset($petugas) ? '(kosongkan jika tidak diubah)' : '' }} <span class="text-red-500">{{ !isset($petugas) ? '*' : '' }}</span></label>
@@ -51,9 +51,9 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Status Ketersediaan <span class="text-red-500">*</span></label>
-                    <select name="status_ketersediaan" class="w-full border rounded-lg px-3 py-2" required>
+                    <select name="status_tersedia" class="w-full border rounded-lg px-3 py-2" required>
                         @foreach (['tersedia'=>'Tersedia','sibuk'=>'Sibuk','tidak_aktif'=>'Tidak Aktif'] as $val => $lab)
-                        <option value="{{ $val }}" {{ old('status_ketersediaan', $petugas?->status_ketersediaan) === $val ? 'selected':'' }}>{{ $lab }}</option>
+                        <option value="{{ $val }}" {{ old('status_tersedia', $petugas?->status_tersedia) === $val ? 'selected':'' }}>{{ $lab }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -61,17 +61,16 @@
 
             {{-- Assignment Zona --}}
             <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Zona Wilayah <span class="text-gray-400">(bisa pilih lebih dari satu)</span></label>
-                <div class="grid grid-cols-2 gap-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Zona Wilayah <span class="text-red-500">*</span></label>
+                <select name="zona_id" class="w-full border rounded-lg px-3 py-2" required>
+                    <option value="" disabled selected>-- Pilih Zona Wilayah --</option>
                     @foreach ($zonas as $zona)
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-blue-50 transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
-                        <input type="checkbox" name="zona_ids[]" value="{{ $zona->id }}"
-                               {{ in_array($zona->id, old('zona_ids', $petugas?->zonas->pluck('id')->toArray() ?? [])) ? 'checked':'' }}
-                               class="accent-blue-600">
-                        <span class="text-sm text-gray-700">{{ $zona->nama_zona }}</span>
-                    </label>
+                    <option value="{{ $zona->id }}" {{ old('zona_id', $petugas?->zona_id) == $zona->id ? 'selected' : '' }}>
+                        {{ $zona->nama_zona }}
+                    </option>
                     @endforeach
-                </div>
+                </select>
+                @error('zona_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="flex gap-3">
