@@ -27,11 +27,13 @@ class ZonaWilayah extends Model
         'nama_zona',
         'kode_zona',
         'deskripsi',
+        'geo_boundary',
         'is_active',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'is_active'    => 'boolean',
+        'geo_boundary' => 'array',
     ];
 
     // ========================
@@ -68,5 +70,13 @@ class ZonaWilayah extends Model
     public function pengaduan()
     {
         return $this->hasMany(Pengaduan::class, 'zona_id');
+    }
+
+    /**
+     * Pengumuman yang mencakup zona ini.
+     */
+    public function announcements()
+    {
+        return $this->belongsToMany(Announcement::class, 'announcement_zone', 'zone_id', 'announcement_id');
     }
 }

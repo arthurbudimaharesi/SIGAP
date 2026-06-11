@@ -35,6 +35,9 @@ class ManajemenPetugasController extends Controller
             'readOnly'          => true,
             'routePrefix'       => 'supervisor.petugas',
             'showCatatanInfo'   => true,
+            'readOnly'        => true,
+            'routePrefix'     => 'supervisor.petugas',
+            'showCatatanInfo' => true,
         ]));
     }
 
@@ -54,8 +57,6 @@ class ManajemenPetugasController extends Controller
 
         $kinerja = $this->manajemenService->getKinerjaPetugas($petugas);
 
-        return view('supervisor.petugas.show', compact('petugas', 'histori', 'kinerja') + [
-            'readOnly'    => true,           // sembunyikan tombol Edit Data
         $pengaduanMenungguTugas = $this->pengaduanSiapDitugaskanUntukPetugas($petugas);
 
         return view('supervisor.petugas.show', compact(

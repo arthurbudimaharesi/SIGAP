@@ -9,6 +9,8 @@
 .env.production
 .env.dusk.local
 .phpunit.result.cache
+composer.lock
+package-lock.json
 Homestead.json
 Homestead.yaml
 auth.json
@@ -29,3 +31,6 @@ storage/framework/cache/*
 # Claude Dev / Claude Code session directories
 /.claude-flow/
 docs/LOGIN_UI_CHEATSHEET.md
+
+# Agent & AI generated files
+agent.md
