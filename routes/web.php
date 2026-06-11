@@ -14,6 +14,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Supervisor\AssignmentController;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboardController;
 use App\Http\Controllers\Supervisor\MonitorSlaController;
+use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
 use App\Http\Controllers\Admin\LaporanKinerjaController;
 use App\Http\Controllers\Supervisor\FilterPengaduanController;
 use App\Http\Controllers\Supervisor\KinerjaPetugasController;
@@ -58,7 +59,7 @@ Route::middleware('auth')->group(function () {
         // PBI-08: Kelola Profil Masyarakat
         Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
         Route::patch('/profil', [ProfileController::class, 'update'])->name('profil.update');
-        Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profil.update-password');
+        Route::put('/profil/password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('profil.update-password');
         Route::delete('/profil', [ProfileController::class, 'destroy'])->name('profil.destroy');
 
         // PBI-04 Pengajuan Pengaduan Digital
@@ -98,6 +99,7 @@ Route::middleware('auth')->group(function () {
         // PBI-24: Profil & Status Petugas
         Route::get('/profil', [\App\Http\Controllers\Petugas\ProfilController::class, 'edit'])->name('profil.edit');
         Route::patch('/profil', [\App\Http\Controllers\Petugas\ProfilController::class, 'update'])->name('profil.update');
+        Route::put('/profil/password', [\App\Http\Controllers\Petugas\ProfilController::class, 'updatePassword'])->name('profil.update-password');
     });
 
     // Role: Supervisor
@@ -109,6 +111,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/profil', [SupervisorProfilController::class, 'edit'])->name('profil.edit');
         Route::patch('/profil', [SupervisorProfilController::class, 'update'])->name('profil.update');
 
+        // PBI-08: Kelola Profil Supervisor
+        Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
+        Route::patch('/profil', [ProfileController::class, 'update'])->name('profil.update');
+        Route::put('/profil/password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('profil.update-password');
+
         Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.index');
         Route::get('/verifikasi/{pengaduan}', [VerifikasiController::class, 'show'])->name('verifikasi.show');
         Route::patch('/verifikasi/{pengaduan}', [VerifikasiController::class, 'update'])->name('verifikasi.update');
@@ -117,6 +124,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/filter/export-csv', [FilterPengaduanController::class, 'exportCsv'])->name('filter.export-csv');
         Route::get('/pengaduan/{pengaduan}', [FilterPengaduanController::class, 'show'])->name('pengaduan.show');
 
+        Route::get('/assignment', [AssignmentController::class, 'index'])->name('assignment.index');
         Route::get('/assignment/{pengaduan}/create', [AssignmentController::class, 'create'])->name('assignment.create');
         Route::post('/assignment/{pengaduan}', [AssignmentController::class, 'store'])->name('assignment.store');
 
@@ -142,11 +150,16 @@ Route::middleware('auth')->group(function () {
     // Role: Admin
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
+        Route::patch('/profil', [ProfileController::class, 'update'])->name('profil.update');
+        Route::put('/profil/password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('profil.update-password');
         Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats'])->name('dashboard.stats');
         Route::get('/pengaduan', [DaftarPengaduanController::class, 'index'])->name('pengaduan.index');
         Route::get('/pengaduan/export-csv', [DaftarPengaduanController::class, 'exportCsv'])->name('pengaduan.export-csv');
         Route::get('/kinerja', [LaporanKinerjaController::class, 'index'])->name('kinerja.index');
         Route::get('/kinerja/export-excel', [LaporanKinerjaController::class, 'exportExcel'])->name('kinerja.export-excel');
+        Route::get('/laporan', [AdminLaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/export-pdf', [AdminLaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
         // PBI-09: Konfigurasi SLA per Kategori
         Route::get('/sla', [AdminSlaController::class, 'index'])->name('sla.index');
         Route::get('/sla/{sla}/edit', [AdminSlaController::class, 'edit'])->name('sla.edit');
