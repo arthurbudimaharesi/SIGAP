@@ -21,7 +21,6 @@ use App\Http\Controllers\Supervisor\AssignmentController;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboardController;
 use App\Http\Controllers\Supervisor\MonitorSlaController;
 use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
-use App\Http\Controllers\Admin\LaporanKinerjaController;
 use App\Http\Controllers\Supervisor\FilterPengaduanController;
 use App\Http\Controllers\Supervisor\KinerjaPetugasController;
 use App\Http\Controllers\Supervisor\LaporanController;
@@ -30,8 +29,6 @@ use App\Http\Controllers\Supervisor\VerifikasiController;
 use App\Http\Controllers\Supervisor\ZonaController as SupervisorZonaController;
 use App\Http\Controllers\Supervisor\ManajemenPetugasController;
 use App\Http\Controllers\Supervisor\BebanPenangananController;
-use Illuminate\Support\Facades\Route;
-
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
