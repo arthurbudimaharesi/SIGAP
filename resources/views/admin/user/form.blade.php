@@ -1,4 +1,5 @@
 <x-app-admin-layout>
+    @php $user = $user ?? null; @endphp
     <x-slot name="title">{{ isset($user) ? 'Edit User' : 'Tambah User' }}</x-slot>
 
     <div class="mb-4">
