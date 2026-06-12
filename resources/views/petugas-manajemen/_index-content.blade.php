@@ -6,8 +6,13 @@
 <div class="mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 font-headline">Manajemen Petugas Teknis</h1>
-            <p class="text-sm text-gray-500 mt-1">Kelola data petugas teknis, status ketersediaan, dan histori penugasan.</p>
+            @if($readOnly)
+                <h1 class="text-2xl font-bold text-gray-900 font-headline">Monitoring Beban Penanganan</h1>
+                <p class="text-sm text-gray-500 mt-1">Pantau status ketersediaan dan histori penugasan (beban kerja) dari petugas teknis.</p>
+            @else
+                <h1 class="text-2xl font-bold text-gray-900 font-headline">Manajemen Petugas Teknis</h1>
+                <p class="text-sm text-gray-500 mt-1">Kelola data petugas teknis, status ketersediaan, dan histori penugasan.</p>
+            @endif
         </div>
         @unless($readOnly)
             <a href="{{ route('admin.petugas.create') }}"
