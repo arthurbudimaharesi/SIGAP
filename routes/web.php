@@ -171,6 +171,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('pelanggan', \App\Http\Controllers\Admin\PelangganController::class);
         Route::resource('kategori', \App\Http\Controllers\Admin\KategoriController::class)
             ->except(['show']);
+            
+        // Manajemen User
+        Route::resource('user', \App\Http\Controllers\Admin\UserController::class)->except(['show']);
+        Route::post('user/{user}/reset-password', [\App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('user.reset-password');
 
         // PBI-16 — Kelola Data Petugas Teknis & PBI-17 — Manajemen Petugas Teknis
         Route::resource('petugas', AdminPetugasController::class)->parameters(['petugas' => 'petugas']);
