@@ -147,6 +147,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/assignment/{pengaduan}', [AssignmentController::class, 'store'])->name('assignment.store');
 
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
         Route::get('/kinerja', [KinerjaPetugasController::class, 'index'])->name('kinerja.index');
         Route::get('/kinerja/export-excel', [KinerjaPetugasController::class, 'exportExcel'])->name('kinerja.export-excel');
 
