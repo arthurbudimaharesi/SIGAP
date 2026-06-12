@@ -56,6 +56,8 @@
                             @endphp
                             <a href="{{ route($route, $notif->pengaduan) }}"
                                class="text-xs text-blue-600 hover:text-blue-800 font-medium hover:underline mt-2 inline-block">Lihat Pengaduan &rarr;</a>
+                        <a href="{{ route('masyarakat.pengaduan.riwayat.show', $notif->pengaduan->nomor_tiket) }}"
+                           class="text-xs text-blue-600 hover:underline mt-1 inline-block">Lihat Pengaduan →</a>
                         @endif
                     </div>
                     <div class="text-left sm:text-right flex-shrink-0 flex flex-col sm:items-end gap-1">

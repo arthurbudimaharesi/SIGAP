@@ -13,6 +13,13 @@
         'ditugaskan'          => ['bg-indigo-100 text-indigo-800',  'engineering',   'Ditugaskan'],
         'diproses'            => ['bg-orange-100 text-orange-800',  'build',         'Sedang Diproses'],
         'selesai'             => ['bg-green-100 text-green-800',    'task_alt',      'Selesai'],
+        'menunggu_verifikasi' => ['bg-yellow-100 text-yellow-800',  '⏳ Menunggu Verifikasi'],
+        'disetujui'           => ['bg-blue-100 text-blue-800',      '✅ Disetujui'],
+        'ditolak'             => ['bg-red-100 text-red-800',        '❌ Ditolak'],
+        'ditugaskan'          => ['bg-indigo-100 text-indigo-800',  '👷 Ditugaskan'],
+        'diproses'            => ['bg-orange-100 text-orange-800',  '🔧 Sedang Diproses'],
+        'sedang_diproses'     => ['bg-orange-100 text-orange-800',  '🔧 Sedang Diproses'],
+        'selesai'             => ['bg-green-100 text-green-800',    '✔️ Selesai'],
     ];
     [$class, $icon, $label] = $config[$status] ?? ['bg-gray-100 text-gray-800', 'help', $status];
 @endphp

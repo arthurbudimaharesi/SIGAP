@@ -31,6 +31,9 @@
     @stack('styles')
 </head>
 <body class="bg-gray-50 font-body text-gray-900 antialiased">
+    @php
+        $profileRoute = route('admin.profil.edit');
+    @endphp
     <div x-data="{
         sidebarOpen: window.innerWidth >= 1024,
         showNotifications: false,
@@ -39,7 +42,6 @@
         showProfileDropdown: false,
         init() {
             this.fetchNotifications();
-            setInterval(() => this.fetchNotifications(), 30000);
         },
         async fetchNotifications() {
             try {
@@ -132,7 +134,7 @@
                             </button>
 
                             <div x-show="showProfileDropdown" @click.outside="showProfileDropdown = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
-                                <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100">Edit Profil</a>
+                                <a href="{{ $profileRoute }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100">Edit Profil</a>
                                 <form method="POST" action="{{ route('logout') }}" class="block" data-confirm="Yakin ingin logout dari akun ini?">
                                     @csrf
                                     <button type="submit" class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50">Logout</button>
@@ -176,6 +178,11 @@
                         <span>Filter Pengaduan</span>
                     </a>
 
+                    <a href="{{ route('admin.laporan.index') }}" :class="isactive('/admin/laporan') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                        <span class="material-symbols-outlined text-xl">description</span>
+                        <span>Laporan Rekap</span>
+                    </a>
+
                     <a href="{{ route('admin.pelanggan.index') }}" :class="isactive('/admin/pelanggan') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                         <span class="material-symbols-outlined text-xl">group</span>
                         <span>Data Pelanggan</span>
@@ -199,6 +206,7 @@
                     <p class="text-xs text-blue-300/60 uppercase tracking-wider font-semibold px-4 mt-6 mb-3">Pengaturan</p>
 
                     <a href="{{ route('admin.user.index') }}" :class="isactive('/admin/user') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                    <a href="{{ route('admin.users.index') }}" :class="isactive('/admin/users') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                         <span class="material-symbols-outlined text-xl">manage_accounts</span>
                         <span>Manajemen User</span>
                     </a>

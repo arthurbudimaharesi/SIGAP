@@ -30,6 +30,9 @@
     </style>
 </head>
 <body class="bg-gray-50 font-body text-gray-900 antialiased">
+    @php
+        $profileRoute = route('supervisor.profil.edit');
+    @endphp
     <div x-data="{
         sidebarOpen: window.innerWidth >= 1024,
         showNotifications: false,
@@ -39,7 +42,6 @@
         showProfileDropdown: false,
         init() {
             this.fetchNotifications();
-            setInterval(() => this.fetchNotifications(), 30000);
         },
         async fetchNotifications() {
             try {
@@ -135,6 +137,8 @@
                             <div x-show="showProfileDropdown" @click.outside="showProfileDropdown = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
                                 <a href="{{ route('supervisor.profil.edit') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100">Edit Profil</a>
                                 <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100">Ganti Password</a>
+                                <a href="{{ $profileRoute }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100">Edit Profil</a>
+                                <a href="{{ route('supervisor.profil.edit') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100">Edit Profil</a>
                                 <form method="POST" action="{{ route('logout') }}" class="block" data-confirm="Yakin ingin logout dari akun ini?">
                                     @csrf
                                     <button type="submit" class="w-full text-left px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">Logout</button>
@@ -184,7 +188,7 @@
                         <span>Semua Pengaduan</span>
                     </a>
 
-                    <a href="{{ route('supervisor.verifikasi.index') }}" :class="isactive('/supervisor/assignment') || isactive('/supervisor/verifikasi') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                    <a href="{{ route('supervisor.assignment.index') }}" :class="isactive('/supervisor/assignment') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                         <span class="material-symbols-outlined text-xl">assignment_ind</span>
                         <span>Assignment</span>
                     </a>
@@ -209,6 +213,12 @@
                     <a href="{{ route('supervisor.kinerja.index') }}" :class="isactive('/supervisor/kinerja') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                         <span class="material-symbols-outlined text-xl">leaderboard</span>
                         <span>Kinerja Petugas</span>
+                    </a>
+
+                    {{-- PBI-36: Monitoring Beban Penanganan --}}
+                    <a href="{{ route('supervisor.beban-penanganan.index') }}" :class="isactive('/supervisor/beban-penanganan') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
+                        <span class="material-symbols-outlined text-xl">balance</span>
+                        <span>Beban Penanganan</span>
                     </a>
 
                     <a href="{{ route('supervisor.zona.index') }}" :class="isactive('/supervisor/zona') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">

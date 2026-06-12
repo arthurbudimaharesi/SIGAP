@@ -33,6 +33,9 @@ class ManajemenPetugasController extends Controller
             'readOnly'          => true,           // sembunyikan Edit & Hapus
             'routePrefix'       => 'supervisor.petugas',
             'showCatatanInfo'   => true,
+            'readOnly'        => true,
+            'routePrefix'     => 'supervisor.petugas',
+            'showCatatanInfo' => true,
         ]));
     }
 

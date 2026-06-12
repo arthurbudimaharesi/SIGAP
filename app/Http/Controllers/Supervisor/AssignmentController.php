@@ -25,6 +25,15 @@ class AssignmentController extends Controller
         private PetugasMonitoringService $monitoringService,
     ) {}
 
+    public function index()
+    {
+        $pengaduans = Pengaduan::with(['pelapor', 'kategori', 'zona'])
+            ->byStatus('disetujui')
+            ->latest()
+            ->paginate(10);
+        return view('supervisor.assignment.index', compact('pengaduans'));
+    }
+
     public function create(Pengaduan $pengaduan)
     {
         if ($pengaduan->assignment) {
@@ -90,6 +99,8 @@ class AssignmentController extends Controller
             ]);
         }
 
+        $this->assignmentService->tugaskan($pengaduan, $request->validated(), auth()->user());
+        $this->assignmentService->tugaskan($pengaduan, $data, auth()->user());
         $this->assignmentService->tugaskan($pengaduan, $validated, auth()->user());
         $this->assignmentService->tugaskan($pengaduan, $data, auth()->user());
 
