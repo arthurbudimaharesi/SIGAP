@@ -10,7 +10,7 @@
     </div>
 
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">✅ Antrean Verifikasi</h1>
+        <h1 class="text-2xl font-bold text-gray-800"><span class="material-symbols-outlined align-middle">check_circle</span> Antrean Verifikasi</h1>
         <span class="bg-yellow-100 text-yellow-800 text-sm font-semibold px-3 py-1 rounded-full">
             {{ $pengaduans->total() }} menunggu
         </span>
@@ -27,7 +27,7 @@
     <div class="bg-white rounded-xl shadow overflow-hidden">
         @if ($pengaduans->isEmpty())
             <div class="text-center py-16 text-gray-400">
-                <div class="text-5xl mb-3">🎉</div>
+                <div class="text-5xl mb-3"><span class="material-symbols-outlined align-middle">celebration</span></div>
                 <p class="font-semibold">Tidak ada pengaduan yang menunggu verifikasi</p>
             </div>
         @else

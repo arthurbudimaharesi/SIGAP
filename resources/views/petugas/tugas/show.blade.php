@@ -312,9 +312,9 @@
                     <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5">Status <span class="text-red-500">*</span></label>
                     <select name="status_assignment" x-model="status" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#022448] focus:border-transparent transition" required>
                         @if ($tugas->status_assignment === 'ditugaskan')
-                            <option value="diproses">🔧 Sedang Diproses</option>
+                            <option value="diproses"><span class="material-symbols-outlined align-middle">build</span> Sedang Diproses</option>
                         @endif
-                        <option value="selesai">✅ Selesai</option>
+                        <option value="selesai"><span class="material-symbols-outlined align-middle">check_circle</span> Selesai</option>
                     </select>
                 </div>
 

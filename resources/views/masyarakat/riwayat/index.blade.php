@@ -173,7 +173,7 @@
                                     </a>
                                     @endif
                                     @if ($p->status === 'selesai' && !$p->rating)
-                                    <a href="{{ route('masyarakat.rating.create', $p) }}"
+                                    <a href="{{ route('masyarakat.rating.create', $p->nomor_tiket) }}"
                                        title="Beri Rating"
                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

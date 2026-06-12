@@ -49,14 +49,23 @@ class NotifikasiController extends Controller
         $notif = Notifikasi::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
         $notif->update(['is_read' => true]);
         
-        // Redirect ke pengaduan terkait jika ada, atau kembali
+        // Redirect ke pengaduan terkait berdasarkan role pengguna
         if ($notif->pengaduan_id) {
             $pengaduan = Pengaduan::find($notif->pengaduan_id);
             if ($pengaduan) {
-                return redirect()->route('pengaduan.riwayat.show', $pengaduan->nomor_tiket);
+                $role = auth()->user()->role;
+                $route = match($role) {
+                    'masyarakat' => 'masyarakat.pengaduan.riwayat.show',
+                    'supervisor' => 'supervisor.pengaduan.show',
+                    'petugas'    => 'petugas.pengaduan.show',
+                    default      => 'masyarakat.pengaduan.riwayat.show',
+                };
+                if (\Illuminate\Support\Facades\Route::has($route)) {
+                    return redirect()->route($route, $pengaduan->nomor_tiket);
+                }
             }
         }
         
-        return redirect()->route('notifikasi.index');
+        return redirect()->route('masyarakat.notifikasi.index');
     }
 }

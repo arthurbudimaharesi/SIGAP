@@ -126,7 +126,7 @@
         {{-- Form Keputusan --}}
         <div class="lg:col-span-1">
             <div class="bg-white rounded-xl shadow p-6 sticky top-24">
-                <h2 class="font-bold text-gray-700 mb-5">📝 Keputusan Verifikasi</h2>
+                <h2 class="font-bold text-gray-700 mb-5"><span class="material-symbols-outlined align-middle">edit_document</span> Keputusan Verifikasi</h2>
 
                 @if (session('error'))
                     <div class="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>

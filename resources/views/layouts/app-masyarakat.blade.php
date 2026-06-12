@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIGAP-AIR - Portal Pengaduan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined' !important;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
 <body class="bg-surface">
     <div x-data="{
@@ -41,11 +50,9 @@
                 <div class="flex items-center justify-between h-16">
                     <!-- Left: Logo -->
                     <div class="flex items-center gap-2">
-                        <svg class="w-6 h-6 text-[#2563EB]" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-                        </svg>
+                        <span class="material-symbols-outlined text-[#022448] text-2xl" style="font-variation-settings: 'FILL' 1;">water_drop</span>
                         <div>
-                            <h1 class="text-lg font-bold text-gray-900 hidden sm:block">SIGAP-AIR</h1>
+                            <h1 class="text-lg font-bold text-[#022448] hidden sm:block" style="font-family: Manrope, sans-serif;">SIGAP-AIR</h1>
                             <p class="text-xs text-gray-500 hidden sm:block">Portal Pengaduan Air</p>
                         </div>
                     </div>
@@ -94,7 +101,7 @@
                         <!-- Profile Dropdown -->
                         <div class="relative">
                             <button @click="showProfileDropdown = !showProfileDropdown" class="flex items-center gap-3 p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                                <img src="https://ui-avatars.com/api/?name=Masyarakat+SIGAP&background=2563EB&color=fff" alt="Avatar" class="w-8 h-8 rounded-full">
+                                <img src="{{ Auth::user()->foto_profil ? asset('storage/' . Auth::user()->foto_profil) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=2563EB&color=fff' }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover">
                                 <div class="hidden sm:block text-left">
                                     <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</p>
                                     <p class="text-xs text-gray-500">Masyarakat</p>
@@ -115,36 +122,11 @@
             </div>
         </nav>
 
-        <!-- NAVIGATION BAR - Mobile Bottom / Desktop Horizontal -->
-        <div class="hidden md:flex bg-white border-b border-gray-200 sticky top-16 z-30">
-            <div class="max-container flex justify-start gap-0">
-                <a href="{{ route('masyarakat.dashboard') }}" :class="isactive('/pengaduan') ? 'border-b-2 border-[#2563EB] text-[#2563EB]' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-3 font-medium text-sm transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                    </svg>
-                    <span>Beranda</span>
-                </a>
 
-                <a href="{{ route('masyarakat.pengaduan.create') }}" :class="isactive('/pengaduan/create') ? 'border-b-2 border-[#2563EB] text-[#2563EB]' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-3 font-medium text-sm transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M12 3.586a1 1 0 00-1.414 0L7 7.172V5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2v2.172l-3.586-3.586zM15 13H5v2h10v-2z" clip-rule="evenodd" />
-                    </svg>
-                    <span>Buat Pengaduan</span>
-                </a>
-
-                <a href="{{ route('masyarakat.pengaduan.riwayat') }}" :class="isactive('/pengaduan/riwayat') ? 'border-b-2 border-[#2563EB] text-[#2563EB]' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-3 font-medium text-sm transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000-2H2a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2 1 1 0 000 2h2a1 1 0 110 2H4zm2 4a1 1 0 100 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-                    </svg>
-                    <span>Riwayat</span>
-                </a>
-            </div>
-        </div>
 
         <!-- MAIN CONTENT -->
-        <main class="flex-1 overflow-y-auto">
-            <div class="max-container py-8">
+        <main class="flex-1 overflow-y-auto w-full">
+            <div class="container mx-auto px-4 py-8">
                 {{ $slot }}
             </div>
         </main>
@@ -152,7 +134,7 @@
         <!-- MOBILE BOTTOM NAVIGATION -->
         <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
             <div class="flex justify-around">
-                <a href="{{ route('masyarakat.dashboard') }}" :class="isactive('/pengaduan') ? 'text-[#2563EB]' : 'text-gray-600'" class="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium hover:bg-gray-50 transition-colors">
+                <a href="{{ route('masyarakat.dashboard') }}" :class="isactive('/dashboard') ? 'text-[#2563EB]' : 'text-gray-600'" class="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium hover:bg-gray-50 transition-colors">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                     </svg>
@@ -193,5 +175,6 @@
     </div>
 
     @include('layouts.partials.flash-message')
+    @stack('scripts')
 </body>
 </html>

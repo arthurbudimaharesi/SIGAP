@@ -8,10 +8,10 @@
     @endphp
 
     <div class="flex items-center justify-between mb-5">
-        <h1 class="text-2xl font-bold text-gray-800">📊 Laporan Kinerja Petugas</h1>
+        <h1 class="text-2xl font-bold text-gray-800"><span class="material-symbols-outlined align-middle">bar_chart</span> Laporan Kinerja Petugas</h1>
         <a href="{{ route($kinerjaExportRoute, request()->all()) }}"
            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
-            📥 Export CSV
+            <span class="material-symbols-outlined align-middle">download</span> Export CSV
         </a>
     </div>
 
@@ -65,7 +65,7 @@
                     <td class="px-5 py-3 text-center text-gray-600">{{ $row['rata_waktu_jam'] ?? '—' }}</td>
                     <td class="px-5 py-3 text-center">
                         @if ($row['rata_rating'])
-                            <span class="text-yellow-500 font-semibold">{{ $row['rata_rating'] }} ⭐</span>
+                            <span class="text-yellow-500 font-semibold">{{ $row['rata_rating'] }} <span class="material-symbols-outlined align-middle text-yellow-500">star</span></span>
                         @else
                             <span class="text-gray-300">—</span>
                         @endif

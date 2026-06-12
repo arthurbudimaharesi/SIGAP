@@ -21,16 +21,22 @@ class RatingController extends Controller
         $this->middleware('auth');
         $this->middleware('role:masyarakat');
     }
-    public function create(Pengaduan $pengaduan)
+    public function create($nomor_tiket)
     {
+        $pengaduan = Pengaduan::where('nomor_tiket', $nomor_tiket)->firstOrFail();
         abort_if($pengaduan->user_id !== auth()->id(), 403);
         abort_if($pengaduan->status !== 'selesai', 400, 'Pengaduan belum selesai.');
         abort_if($pengaduan->rating()->exists(), 400, 'Sudah memberikan rating.');
         return view('masyarakat.rating.create', compact('pengaduan'));
     }
 
-    public function store(Request $request, Pengaduan $pengaduan)
+    public function store(Request $request, $nomor_tiket)
     {
+        $pengaduan = Pengaduan::where('nomor_tiket', $nomor_tiket)->firstOrFail();
+        abort_if($pengaduan->user_id !== auth()->id(), 403);
+        abort_if($pengaduan->status !== 'selesai', 400, 'Pengaduan belum selesai.');
+        abort_if($pengaduan->rating()->exists(), 400, 'Sudah memberikan rating.');
+
         $request->validate([
             'rating'   => 'required|integer|between:1,5',
             'komentar' => 'nullable|string|max:500',
@@ -41,10 +47,9 @@ class RatingController extends Controller
             'user_id'       => auth()->id(),
             'rating'        => $request->rating,
             'komentar'      => $request->komentar,
-            'tanggal_rating'=> now(),
         ]);
 
-        return redirect()->route('masyarakat.pengaduan.riwayat.show', $pengaduan)
+        return redirect()->route('masyarakat.pengaduan.riwayat.show', $pengaduan->nomor_tiket)
                          ->with('success', 'Terima kasih atas penilaian Anda!');
     }
 }

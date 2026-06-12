@@ -19,7 +19,7 @@
     </div>
 
     <div class="flex items-center justify-between mb-5">
-        <h1 class="text-2xl font-bold text-gray-800">📄 Laporan Rekap Pengaduan</h1>
+        <h1 class="text-2xl font-bold text-gray-800"><span class="material-symbols-outlined align-middle">description</span> Laporan Rekap Pengaduan</h1>
         <a href="{{ route($exportRoute, request()->all()) }}"
            target="_blank"
            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">

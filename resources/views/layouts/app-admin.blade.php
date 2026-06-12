@@ -126,7 +126,7 @@
                         <!-- Profile Dropdown -->
                         <div class="relative">
                             <button @click="showProfileDropdown = !showProfileDropdown" class="flex items-center gap-3 p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=022448&color=fff" alt="Avatar" class="w-8 h-8 rounded-full">
+                                <img src="{{ Auth::user()->foto_profil ? asset('storage/' . Auth::user()->foto_profil) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=022448&color=fff' }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover">
                                 <div class="hidden sm:block text-left">
                                     <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</p>
                                     <p class="text-xs text-gray-500">Admin</p>
@@ -205,7 +205,6 @@
 
                     <p class="text-xs text-blue-300/60 uppercase tracking-wider font-semibold px-4 mt-6 mb-3">Pengaturan</p>
 
-                    <a href="{{ route('admin.user.index') }}" :class="isactive('/admin/user') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                     <a href="{{ route('admin.users.index') }}" :class="isactive('/admin/users') ? 'bg-white/15 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200">
                         <span class="material-symbols-outlined text-xl">manage_accounts</span>
                         <span>Manajemen User</span>
@@ -225,7 +224,7 @@
                 <!-- Sidebar Footer: User Info -->
                 <div class="p-4 border-t border-white/10 mt-auto">
                     <div class="flex items-center gap-3 p-3 bg-white/10 rounded-xl backdrop-blur-sm">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=1e3a5f&color=fff" alt="Avatar" class="w-10 h-10 rounded-full ring-2 ring-white/20">
+                        <img src="{{ Auth::user()->foto_profil ? asset('storage/' . Auth::user()->foto_profil) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=1e3a5f&color=fff' }}" alt="Avatar" class="w-10 h-10 rounded-full ring-2 ring-white/20 object-cover">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-white truncate">{{ Auth::user()->name }}</p>
                             <span class="inline-block px-2 py-0.5 bg-white/20 text-blue-100 text-xs rounded-md font-semibold mt-1">Admin</span>

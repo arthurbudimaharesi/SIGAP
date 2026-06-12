@@ -224,9 +224,9 @@
                         </label>
                         <select name="status_tersedia" id="status_tersedia"
                                 class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#022448]/20 focus:border-[#022448] transition">
-                            <option value="tersedia"    {{ old('status_tersedia', $petugas->status_tersedia) === 'tersedia'    ? 'selected':'' }}>✅ Tersedia</option>
-                            <option value="sibuk"       {{ old('status_tersedia', $petugas->status_tersedia) === 'sibuk'       ? 'selected':'' }}>🕐 Sibuk</option>
-                            <option value="tidak_aktif" {{ old('status_tersedia', $petugas->status_tersedia) === 'tidak_aktif' ? 'selected':'' }}>❌ Tidak Aktif</option>
+                            <option value="tersedia"    {{ old('status_tersedia', $petugas->status_tersedia) === 'tersedia'    ? 'selected':'' }}><span class="material-symbols-outlined align-middle">check_circle</span> Tersedia</option>
+                            <option value="sibuk"       {{ old('status_tersedia', $petugas->status_tersedia) === 'sibuk'       ? 'selected':'' }}><span class="material-symbols-outlined align-middle">schedule</span> Sibuk</option>
+                            <option value="tidak_aktif" {{ old('status_tersedia', $petugas->status_tersedia) === 'tidak_aktif' ? 'selected':'' }}><span class="material-symbols-outlined align-middle">cancel</span> Tidak Aktif</option>
                         </select>
                         @error('status_tersedia')
                             <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1">
@@ -329,9 +329,9 @@
                 @csrf
                 @method('PATCH')
                 <select name="status_tersedia" id="status-modal-select" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-4">
-                    <option value="tersedia">✅ Tersedia</option>
-                    <option value="sibuk">🕐 Sibuk</option>
-                    <option value="tidak_aktif">❌ Tidak Aktif</option>
+                    <option value="tersedia"><span class="material-symbols-outlined align-middle">check_circle</span> Tersedia</option>
+                    <option value="sibuk"><span class="material-symbols-outlined align-middle">schedule</span> Sibuk</option>
+                    <option value="tidak_aktif"><span class="material-symbols-outlined align-middle">cancel</span> Tidak Aktif</option>
                 </select>
                 <div class="flex gap-2 justify-end">
                     <button type="button" onclick="closeStatusModal()" class="px-4 py-2 text-sm bg-gray-100 rounded-lg">Batal</button>

@@ -26,12 +26,17 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::when($request->search, function ($q, $v) {
-                $q->where('name', 'like', "%{$v}%")
-                  ->orWhere('email', 'like', "%{$v}%")
-                  ->orWhere('username', 'like', "%{$v}%");
+                $q->where(function($q) use ($v) {
+                    $q->where('name', 'like', "%{$v}%")
+                      ->orWhere('email', 'like', "%{$v}%")
+                      ->orWhere('username', 'like', "%{$v}%");
+                });
             })
             ->when($request->role, fn ($q, $v) => $q->where('role', $v))
             ->when($request->filled('is_active'), fn ($q) => $q->where('is_active', $request->boolean('is_active')))
+            ->when($request->zona_id, function ($q, $v) {
+                $q->whereHas('petugas', fn ($pq) => $pq->where('zona_id', $v));
+            })
             ->with('petugas.zona')
             ->orderByDesc('created_at')
             ->paginate(15)
@@ -44,8 +49,10 @@ class UserController extends Controller
             'petugas'    => User::where('role', 'petugas')->count(),
             'masyarakat' => User::where('role', 'masyarakat')->count(),
         ];
+        
+        $zonas = ZonaWilayah::where('is_active', true)->orderBy('nama_zona')->get();
 
-        return view('admin.user.index', compact('users', 'stats'));
+        return view('admin.user.index', compact('users', 'stats', 'zonas'));
     }
 
     /**
@@ -212,15 +219,19 @@ class UserController extends Controller
 
     /**
      * POST /admin/users/{id}/reset-password
-     * Generate password acak 10 karakter — flash ke session (tidak dikirim email).
+     * Admin set password baru via modal form.
      */
-    public function resetPassword(User $user)
+    public function resetPassword(Request $request, User $user)
     {
-        $passwordBaru = Str::random(10);
-        $user->update(['password' => Hash::make($passwordBaru)]);
+        $request->validate([
+            'password'              => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required|string',
+        ]);
+
+        $user->update(['password' => Hash::make($request->password)]);
 
         return redirect()->back()
-            ->with('password_baru', $passwordBaru);
+            ->with('success', "Password {$user->name} berhasil diperbarui.");
     }
 
     /**

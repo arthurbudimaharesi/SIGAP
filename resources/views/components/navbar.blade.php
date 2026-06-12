@@ -2,7 +2,7 @@
     {{-- Brand --}}
     <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-            <span class="text-brand font-black text-sm">💧</span>
+            <span class="text-brand font-black text-sm"><span class="material-symbols-outlined align-middle text-[#022448]">water_drop</span></span>
         </div>
         <span class="font-bold text-lg tracking-tight">SIGAP-AIR</span>
     </div>

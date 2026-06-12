@@ -99,9 +99,6 @@ class AssignmentController extends Controller
             ]);
         }
 
-        $this->assignmentService->tugaskan($pengaduan, $request->validated(), auth()->user());
-        $this->assignmentService->tugaskan($pengaduan, $data, auth()->user());
-        $this->assignmentService->tugaskan($pengaduan, $validated, auth()->user());
         $this->assignmentService->tugaskan($pengaduan, $data, auth()->user());
 
         return redirect()

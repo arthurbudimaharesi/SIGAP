@@ -7,7 +7,7 @@
 
     <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-6">
         <h1 class="text-xl font-bold text-gray-800 mb-5">
-            {{ isset($petugas) ? '✏️ Edit Petugas' : '➕ Tambah Petugas Baru' }}
+            {{ isset($petugas) ? '<span class="material-symbols-outlined align-middle">edit</span> Edit Petugas' : '<span class="material-symbols-outlined align-middle">add</span> Tambah Petugas Baru' }}
         </h1>
 
         <form method="POST" enctype="multipart/form-data" id="{{ isset($petugas) ? 'form-edit-petugas' : '' }}"
@@ -115,7 +115,7 @@
 
             <div class="flex gap-3">
                 <button type="submit" class="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition">
-                    {{ isset($petugas) ? '💾 Simpan Perubahan' : '➕ Tambah Petugas' }}
+                    {{ isset($petugas) ? '<span class="material-symbols-outlined align-middle">save</span> Simpan Perubahan' : '<span class="material-symbols-outlined align-middle">add</span> Tambah Petugas' }}
                 </button>
                 <a href="{{ route('admin.petugas.index') }}" class="flex-1 text-center bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition">
                     Batal

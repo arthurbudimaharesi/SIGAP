@@ -5,6 +5,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* AlpineJS: sembunyikan elemen ber-atribut x-cloak hingga Alpine siap */
+[x-cloak] { display: none !important; }
+
 /* Login gradient — dipakai di login.blade.php tanpa CDN */
 .bg-login-gradient {
     background: linear-gradient(135deg, #0F4C81 0%, #0a3460 100%);

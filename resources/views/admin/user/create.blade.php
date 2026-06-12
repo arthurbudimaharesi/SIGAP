@@ -123,7 +123,7 @@
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">
-                            NIP <span class="text-xs text-emerald-700 ml-1 font-bold bg-emerald-100 px-2 py-0.5 rounded-full">✨ Auto-Generate</span>
+                            NIP <span class="text-xs text-emerald-700 ml-1 font-bold bg-emerald-100 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined align-middle">magic_button</span> Auto-Generate</span>
                         </label>
                         <input type="text" :value="nipPreview" disabled
                                class="w-full border border-gray-300 bg-gray-100 text-gray-500 rounded-xl px-4 py-2.5 text-sm font-mono font-medium tracking-wide">

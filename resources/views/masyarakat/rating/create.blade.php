@@ -1,5 +1,5 @@
 {{-- PBI-11 Form Rating --}}
-<x-app-layout>
+<x-app-masyarakat-layout>
     <x-slot name="title">Beri Penilaian</x-slot>
 
     <div class="max-w-lg mx-auto">
@@ -8,7 +8,7 @@
         </div>
         <div class="bg-white rounded-xl shadow p-6">
             <div class="text-center mb-6">
-                <div class="text-4xl mb-2">⭐</div>
+                <div class="text-4xl mb-2"><span class="material-symbols-outlined align-middle text-yellow-500">star</span></div>
                 <h1 class="text-xl font-bold text-gray-800">Beri Penilaian Layanan</h1>
                 <p class="text-sm text-gray-500 mt-1">Pengaduan {{ $pengaduan->nomor_tiket }} telah selesai</p>
             </div>
@@ -63,4 +63,4 @@
         }
     </script>
     @endpush
-</x-app-layout>
+</x-app-masyarakat-layout>

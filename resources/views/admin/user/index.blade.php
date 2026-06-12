@@ -55,8 +55,15 @@
 
     {{-- Filters & Search --}}
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6">
-        <form action="{{ route('admin.users.index') }}" method="GET" class="p-4 flex flex-col lg:flex-row gap-4">
-            <div class="flex-1">
+        <form action="{{ route('admin.users.index') }}" method="GET" class="p-4 flex flex-col lg:flex-row gap-4 flex-wrap"
+              x-data="{
+                  selectedRole: '{{ request('role') }}',
+                  zonaId: '{{ request('zona_id') }}',
+                  showZona() { return this.selectedRole === 'petugas' || this.selectedRole === ''; },
+                  onRoleChange() { if (!this.showZona()) { this.zonaId = ''; } }
+              }">
+            {{-- Search --}}
+            <div class="flex-1 min-w-56">
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Cari User</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -67,29 +74,59 @@
                            placeholder="Nama, email, atau username...">
                 </div>
             </div>
-            <div class="lg:w-48">
+
+            {{-- Role --}}
+            <div class="lg:w-44">
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Role</label>
-                <select name="role" class="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#022448]/20 focus:border-[#022448] outline-none transition-all bg-white">
+                <select name="role" x-model="selectedRole" @change="onRoleChange()"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#022448]/20 focus:border-[#022448] outline-none transition-all bg-white">
                     <option value="">Semua Role</option>
-                    @foreach(['admin', 'supervisor', 'petugas', 'masyarakat'] as $role)
-                        <option value="{{ $role }}" {{ request('role') == $role ? 'selected' : '' }}>{{ ucfirst($role) }}</option>
+                    @foreach(['admin', 'supervisor', 'petugas', 'masyarakat'] as $r)
+                        <option value="{{ $r }}" {{ request('role') === $r ? 'selected' : '' }}>{{ ucfirst($r) }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="lg:w-48">
+
+            {{-- Zona — hanya muncul saat Role = Petugas atau Semua --}}
+            <div class="lg:w-44" x-show="showZona()" x-transition>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    <span class="material-symbols-outlined text-xs align-middle">location_on</span>
+                    Zona Lokasi
+                </label>
+                <select name="zona_id" x-model="zonaId"
+                        :disabled="!showZona()"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#022448]/20 focus:border-[#022448] outline-none transition-all bg-white disabled:opacity-50">
+                    <option value="">Semua Zona</option>
+                    @foreach($zonas as $zona)
+                        <option value="{{ $zona->id }}" {{ request('zona_id') == $zona->id ? 'selected' : '' }}>
+                            {{ $zona->nama_zona }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Status --}}
+            <div class="lg:w-44">
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Status</label>
-                <select name="is_active" class="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#022448]/20 focus:border-[#022448] outline-none transition-all bg-white">
+                <select name="is_active"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#022448]/20 focus:border-[#022448] outline-none transition-all bg-white">
                     <option value="">Semua Status</option>
                     <option value="1" {{ request('is_active') == '1' ? 'selected' : '' }}>Aktif</option>
                     <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Nonaktif</option>
                 </select>
             </div>
+
+            {{-- Actions --}}
             <div class="flex items-end gap-2">
-                <button type="submit" class="h-[42px] px-6 bg-[#022448] text-white rounded-xl text-sm font-semibold hover:bg-[#0A3D73] transition-colors shadow-sm">
+                <button type="submit"
+                        class="h-[42px] px-6 bg-[#022448] text-white rounded-xl text-sm font-semibold hover:bg-[#0A3D73] transition-colors shadow-sm inline-flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">filter_list</span>
                     Filter
                 </button>
-                @if(request()->anyFilled(['search', 'role', 'is_active']))
-                    <a href="{{ route('admin.users.index') }}" class="h-[42px] px-4 flex items-center text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-semibold transition-colors">
+                @if(request()->anyFilled(['search', 'role', 'zona_id', 'is_active']))
+                    <a href="{{ route('admin.users.index') }}"
+                       class="h-[42px] px-4 flex items-center gap-1 text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-semibold transition-colors">
+                        <span class="material-symbols-outlined text-sm">close</span>
                         Reset
                     </a>
                 @endif
@@ -182,29 +219,35 @@
                                        class="w-8 h-8 flex items-center justify-center text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors" title="Edit">
                                         <span class="material-symbols-outlined text-lg">edit</span>
                                     </a>
-                                    <form method="POST" action="{{ route('admin.user.reset-password', $user) }}" class="inline-block">
-                                        @csrf
-                                        <button type="button"
-                                                onclick="if(confirm('Reset password user ini ke \'password\'?')) { this.closest('form').submit(); }"
-                                                class="w-8 h-8 flex items-center justify-center text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
-                                                title="Reset Password">
-                                            <span class="material-symbols-outlined text-lg" style="pointer-events:none;">lock_reset</span>
-                                        </button>
-                                    </form>
-                                    @if ($user->id !== auth()->id() && $user->is_active)
-                                        <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="inline-block">
+                                    {{-- Tombol buka modal reset password --}}
+                                    <button type="button"
+                                            @click="$dispatch('open-reset-modal', { id: {{ $user->id }}, name: '{{ addslashes($user->name) }}', url: '{{ route('admin.users.reset-password', $user) }}' })"
+                                            class="w-8 h-8 flex items-center justify-center text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
+                                            title="Reset Password">
+                                        <span class="material-symbols-outlined text-lg">lock_reset</span>
+                                    </button>
+                                    @if ($user->id !== auth()->id())
+                                        <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}" class="inline-block">
                                             @csrf
-                                            @method('DELETE')
-                                            <button type="button"
-                                                    onclick="if(confirm('Nonaktifkan user ini? User tidak akan bisa login ke sistem.')) { this.closest('form').submit(); }"
-                                                    class="w-8 h-8 flex items-center justify-center text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
-                                                    title="Nonaktifkan">
-                                                <span class="material-symbols-outlined text-lg" style="pointer-events:none;">person_off</span>
-                                            </button>
+                                            @if ($user->is_active)
+                                                <button type="button"
+                                                        onclick="if(confirm('Nonaktifkan user ini? User tidak akan bisa login ke sistem.')) { this.closest('form').submit(); }"
+                                                        class="w-8 h-8 flex items-center justify-center text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
+                                                        title="Nonaktifkan">
+                                                    <span class="material-symbols-outlined text-lg" style="pointer-events:none;">person_off</span>
+                                                </button>
+                                            @else
+                                                <button type="button"
+                                                        onclick="if(confirm('Aktifkan kembali user ini?')) { this.closest('form').submit(); }"
+                                                        class="w-8 h-8 flex items-center justify-center text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
+                                                        title="Aktifkan">
+                                                    <span class="material-symbols-outlined text-lg" style="pointer-events:none;">check_circle</span>
+                                                </button>
+                                            @endif
                                         </form>
                                     @else
                                         <span class="w-8 h-8 flex items-center justify-center text-gray-300 bg-gray-50 rounded-lg cursor-not-allowed"
-                                              title="{{ $user->id === auth()->id() ? 'Tidak dapat menonaktifkan akun sendiri' : 'Sudah nonaktif' }}">
+                                              title="Tidak dapat mengubah status akun sendiri">
                                             <span class="material-symbols-outlined text-lg">person_off</span>
                                         </span>
                                     @endif
@@ -248,5 +291,114 @@
     <p class="mt-3 text-xs font-semibold text-gray-400 text-right">
         Menampilkan {{ $users->count() }} dari {{ $users->total() }} pengguna
     </p>
+
+    {{-- Modal Reset Password (shared, dipakai untuk semua user) --}}
+    <div x-data="{
+            show: false,
+            userId: null,
+            userName: '',
+            formUrl: '',
+            password: '',
+            passwordConfirm: '',
+            showPass: false,
+            get isMatch() { return this.password === this.passwordConfirm; },
+            get isValid() { return this.password.length >= 6 && this.isMatch; }
+        }"
+         @open-reset-modal.window="show = true; userId = $event.detail.id; userName = $event.detail.name; formUrl = $event.detail.url; password = ''; passwordConfirm = ''; showPass = false;"
+         x-show="show"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         @keydown.escape.window="show = false"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4"
+         style="display:none;">
+
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="show = false"></div>
+
+        {{-- Modal Card --}}
+        <div class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             @click.stop>
+
+            {{-- Header --}}
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-xl">lock_reset</span>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-base">Reset Password</h3>
+                        <p class="text-blue-100 text-xs" x-text="userName"></p>
+                    </div>
+                </div>
+                <button @click="show = false" class="text-white/70 hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            {{-- Body --}}
+            <form :action="formUrl" method="POST">
+                @csrf
+                <div class="p-6 space-y-4">
+                    <p class="text-sm text-gray-500">Masukkan password baru untuk user ini. Minimal 6 karakter.</p>
+
+                    {{-- Password Baru --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1.5">Password Baru</label>
+                        <div class="relative">
+                            <input :type="showPass ? 'text' : 'password'"
+                                   name="password"
+                                   x-model="password"
+                                   class="w-full pr-10 pl-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                   placeholder="Min. 6 karakter"
+                                   autocomplete="new-password"
+                                   required minlength="6">
+                            <button type="button" @click="showPass = !showPass"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <span class="material-symbols-outlined text-lg" x-text="showPass ? 'visibility_off' : 'visibility'"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Konfirmasi Password --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1.5">Konfirmasi Password</label>
+                        <input :type="showPass ? 'text' : 'password'"
+                               name="password_confirmation"
+                               x-model="passwordConfirm"
+                               :class="passwordConfirm && !isMatch ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-500/20'"
+                               class="w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2"
+                               placeholder="Ulangi password"
+                               autocomplete="new-password"
+                               required>
+                        <p x-show="passwordConfirm && !isMatch" class="text-xs text-red-500 mt-1">
+                            ⚠ Password tidak cocok
+                        </p>
+                        <p x-show="passwordConfirm && isMatch && password.length >= 6" class="text-xs text-emerald-600 mt-1">
+                            ✓ Password cocok
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Footer --}}
+                <div class="px-6 pb-6 flex items-center justify-end gap-3">
+                    <button type="button" @click="show = false"
+                            class="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit"
+                            :disabled="!isValid"
+                            :class="isValid ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'"
+                            class="px-5 py-2 text-sm font-semibold rounded-xl transition-colors inline-flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">lock_reset</span>
+                        Simpan Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </x-app-admin-layout>

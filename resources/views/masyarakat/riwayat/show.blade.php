@@ -163,7 +163,7 @@
 
                 @if ($pengaduan->status === 'ditolak')
                     <div class="py-6 px-4 bg-red-50 rounded-xl text-center border border-red-100">
-                        <div class="text-3xl mb-2">❌</div>
+                        <div class="text-3xl mb-2"><span class="material-symbols-outlined align-middle">cancel</span></div>
                         <p class="text-red-700 font-semibold text-sm">Pengaduan Ditolak</p>
                         @if ($pengaduan->alasan_penolakan)
                         <p class="text-xs text-red-600 mt-2 leading-relaxed">{{ $pengaduan->alasan_penolakan }}</p>
@@ -235,17 +235,17 @@
                     <div class="pt-3 border-t border-gray-100">
                         @if ($statusSla === 'terpenuhi')
                         <div class="flex items-center gap-2 text-emerald-700 bg-emerald-50 px-3 py-2 rounded-lg text-xs font-semibold">
-                            <span>✅</span>
+                            <span><span class="material-symbols-outlined align-middle">check_circle</span></span>
                             <span>SLA Terpenuhi</span>
                         </div>
                         @elseif ($statusSla === 'overdue')
                         <div class="flex items-center gap-2 text-red-700 bg-red-50 px-3 py-2 rounded-lg text-xs font-semibold">
-                            <span>🚨</span>
+                            <span><span class="material-symbols-outlined align-middle text-red-500">error</span></span>
                             <span>SLA Terlampaui ({{ $slaJam }} jam)</span>
                         </div>
                         @else
                         <div class="flex items-center gap-2 text-amber-700 bg-amber-50 px-3 py-2 rounded-lg text-xs font-semibold">
-                            <span>⏳</span>
+                            <span><span class="material-symbols-outlined align-middle">hourglass_top</span></span>
                             <span>{{ $teksSisaSla }} (batas {{ $slaJam }} jam)</span>
                         </div>
                         @endif
@@ -280,13 +280,13 @@
             @elseif ($pengaduan->status === 'selesai')
             <div class="rounded-2xl border border-amber-200 bg-amber-50 shadow-sm p-6 text-center">
                 <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span class="text-lg">⭐</span>
+                    <span class="text-lg"><span class="material-symbols-outlined align-middle text-yellow-500">star</span></span>
                 </div>
                 <h3 class="font-semibold text-amber-900 mb-1">Berikan Penilaian</h3>
                 <p class="text-xs text-amber-700 mb-4 leading-relaxed">Pengaduan sudah selesai! Bantu kami dengan memberikan penilaian.</p>
                 <a href="{{ route('masyarakat.rating.create', $pengaduan->nomor_tiket) }}"
                    class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 transition-colors text-sm w-full">
-                    <span>⭐</span>
+                    <span><span class="material-symbols-outlined align-middle text-yellow-500">star</span></span>
                     Nilai Sekarang
                 </a>
             </div>

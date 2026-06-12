@@ -12,7 +12,7 @@
     <!-- Welcome Card -->
     <div class="bg-white rounded-lg shadow-md p-8 border border-gray-200">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">
-            Halo, {{ Auth::user()->name }}! 👋
+            Halo, {{ Auth::user()->name }}! <span class="material-symbols-outlined align-middle text-yellow-500">waving_hand</span>
         </h2>
         <p class="text-gray-600 leading-relaxed">
             Anda sekarang telah masuk ke sistem SIGAP-AIR dengan role <span class="font-semibold text-indigo-600">Masyarakat</span>. 

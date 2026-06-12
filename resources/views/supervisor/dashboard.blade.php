@@ -120,7 +120,7 @@
                         <span class="text-xs text-gray-400">{{ $p->tanggal_pengajuan->diffForHumans() }}</span>
                     </a>
                     @empty
-                    <p class="py-4 text-center text-sm text-gray-400">Tidak ada antrean 🎉</p>
+                    <p class="py-4 text-center text-sm text-gray-400">Tidak ada antrean <span class="material-symbols-outlined align-middle">celebration</span></p>
                     @endforelse
                 </div>
             </div>

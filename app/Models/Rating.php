@@ -21,12 +21,10 @@ class Rating extends Model
         'user_id',
         'rating',       // 1 - 5
         'komentar',
-        'tanggal_rating',
     ];
 
     protected $casts = [
         'rating'         => 'integer',
-        'tanggal_rating' => 'datetime',
     ];
 
     public function pengaduan() { return $this->belongsTo(Pengaduan::class); }

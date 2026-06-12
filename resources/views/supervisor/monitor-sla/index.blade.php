@@ -94,9 +94,9 @@
                     <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Status SLA</label>
                     <select name="status_sla" class="w-full py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#0F4C81]/20 focus:border-[#0F4C81]">
                         <option value="semua" {{ $filterSla === 'semua' ? 'selected' : '' }}>Semua Status</option>
-                        <option value="berjalan" {{ $filterSla === 'berjalan' ? 'selected' : '' }}>🟢 Berjalan</option>
-                        <option value="overdue" {{ $filterSla === 'overdue' ? 'selected' : '' }}>🔴 Overdue</option>
-                        <option value="terpenuhi" {{ $filterSla === 'terpenuhi' ? 'selected' : '' }}>✅ Terpenuhi</option>
+                        <option value="berjalan" {{ $filterSla === 'berjalan' ? 'selected' : '' }}><span class="material-symbols-outlined align-middle text-green-500">task_alt</span> Berjalan</option>
+                        <option value="overdue" {{ $filterSla === 'overdue' ? 'selected' : '' }}><span class="material-symbols-outlined align-middle text-red-500">error</span> Overdue</option>
+                        <option value="terpenuhi" {{ $filterSla === 'terpenuhi' ? 'selected' : '' }}><span class="material-symbols-outlined align-middle">check_circle</span> Terpenuhi</option>
                     </select>
                 </div>
                 <div class="w-48">
@@ -172,7 +172,7 @@
                         <td class="px-6 py-4">
                             <span class="font-mono text-sm font-bold {{ $isOverdue ? 'text-red-700' : 'text-[#0F4C81]' }}">{{ $p->nomor_tiket }}</span>
                             @if($isOverdue && $sla->is_flagged)
-                                <span class="inline-block ml-1 text-red-500 animate-pulse" title="Ditandai untuk eskalasi">🚩</span>
+                                <span class="inline-block ml-1 text-red-500 animate-pulse" title="Ditandai untuk eskalasi"><span class="material-symbols-outlined align-middle text-red-500">flag</span></span>
                             @endif
                         </td>
                         <td class="px-6 py-4 text-gray-700 text-xs">{{ $p->pelapor->name ?? '-' }}</td>
@@ -205,7 +205,7 @@
                         </td>
                         <td class="px-6 py-4 text-center">
                             @if($isTerpenuhi)
-                                <span class="text-xs text-emerald-600 font-semibold">✅ Selesai</span>
+                                <span class="text-xs text-emerald-600 font-semibold"><span class="material-symbols-outlined align-middle">check_circle</span> Selesai</span>
                             @elseif($sla && $sla->batas_waktu)
                                 @if($sisaNegatif)
                                     <span class="text-xs font-bold text-red-600">
