@@ -60,9 +60,20 @@ class VerifikasiController extends Controller
         if ($validated['keputusan'] === 'disetujui') {
             $this->pengaduanService->setujui($pengaduan, auth()->user());
 
+            // Panggil Service untuk auto-assign petugas
+            $assignmentService = app(\App\Services\AssignmentService::class);
+            $assigned = $assignmentService->autoAssign($pengaduan, auth()->user());
+
+            if ($assigned) {
+                return redirect()
+                    ->route('supervisor.pengaduan.show', $pengaduan)
+                    ->with('success', 'Pengaduan disetujui dan otomatis ditugaskan ke petugas ' . $assigned->petugas->user->name . '.');
+            }
+
+            // Fallback manual jika tidak ada petugas tersedia di zona tersebut
             return redirect()
                 ->route('supervisor.assignment.create', $pengaduan)
-                ->with('success', 'Pengaduan disetujui. Silakan tugaskan petugas.');
+                ->with('success', 'Pengaduan disetujui. Silakan tugaskan petugas secara manual (tidak ada petugas tersedia di zona ini).');
         }
 
         $this->pengaduanService->tolak($pengaduan, $validated['alasan_penolakan'], auth()->user());

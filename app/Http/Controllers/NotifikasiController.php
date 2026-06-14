@@ -54,10 +54,18 @@ class NotifikasiController extends Controller
             $pengaduan = Pengaduan::find($notif->pengaduan_id);
             if ($pengaduan) {
                 $role = auth()->user()->role;
+
+                if ($role === 'petugas') {
+                    $assignment = $pengaduan->assignment;
+                    if ($assignment && $assignment->petugas_id === auth()->user()->petugas?->id) {
+                        return redirect()->route('petugas.tugas.show', $assignment);
+                    }
+                    return redirect()->route('petugas.tugas.index');
+                }
+
                 $route = match($role) {
                     'masyarakat' => 'masyarakat.pengaduan.riwayat.show',
                     'supervisor' => 'supervisor.pengaduan.show',
-                    'petugas'    => 'petugas.pengaduan.show',
                     default      => 'masyarakat.pengaduan.riwayat.show',
                 };
                 if (\Illuminate\Support\Facades\Route::has($route)) {
@@ -66,6 +74,6 @@ class NotifikasiController extends Controller
             }
         }
         
-        return redirect()->route('masyarakat.notifikasi.index');
+        return redirect()->route('notifikasi.index');
     }
 }

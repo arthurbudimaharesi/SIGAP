@@ -1,4 +1,19 @@
+@php
+    $role = auth()->user()->role;
+    $backUrl = match($role) {
+        'admin' => route('admin.dashboard'),
+        'supervisor' => route('supervisor.dashboard'),
+        'petugas' => route('petugas.dashboard'),
+        default => route('masyarakat.dashboard'),
+    };
+@endphp
 <div class="max-w-4xl mx-auto space-y-6 animate-fade-in-up">
+    <!-- Tombol Kembali -->
+    <a href="{{ $backUrl }}" class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Kembali ke Dashboard
+    </a>
+
     <div>
         <h1 class="text-2xl font-bold text-gray-900 font-heading">Profil Saya</h1>
         <p class="mt-1 text-sm text-gray-500">Kelola informasi akun dan keamanan Anda.</p>

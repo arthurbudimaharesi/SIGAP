@@ -10,6 +10,14 @@
 <x-app-supervisor-layout>
     @include('profile.partials.edit-content')
 </x-app-supervisor-layout>
+@elseif ($role === 'masyarakat')
+<x-app-masyarakat-layout>
+    @include('profile.partials.edit-content')
+</x-app-masyarakat-layout>
+@elseif ($role === 'petugas')
+<x-app-petugas-layout>
+    @include('profile.partials.edit-content')
+</x-app-petugas-layout>
 @else
 <x-app-layout>
     @include('profile.partials.edit-content')

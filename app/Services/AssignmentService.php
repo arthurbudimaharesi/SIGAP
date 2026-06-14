@@ -14,6 +14,46 @@ class AssignmentService
     ) {}
 
     /**
+     * Penugasan otomatis berdasarkan beban kerja (Least Workload).
+     *
+     * @return Assignment|null Return Assignment jika berhasil, null jika gagal (tidak ada petugas tersedia).
+     */
+    public function autoAssign(Pengaduan $pengaduan, User $supervisor): ?Assignment
+    {
+        // 1. Cari petugas di zona yang sama dengan status tersedia
+        // Prioritaskan petugas dengan jumlah tugas aktif paling sedikit
+        $petugasTerbaik = Petugas::withCount('assignmentsAktif')
+            ->where('zona_id', $pengaduan->zona_id)
+            ->where('status_tersedia', 'tersedia')
+            ->orderBy('assignments_aktif_count', 'asc')
+            ->first();
+
+        // Jika tidak ketemu berdasarkan zona_id, mungkin ter-mapping via tabel pivot (officer_zone)
+        if (!$petugasTerbaik) {
+            $petugasTerbaik = Petugas::whereHas('zones', function ($q) use ($pengaduan) {
+                    $q->where('zona_wilayah.id', $pengaduan->zona_id);
+                })
+                ->withCount('assignmentsAktif')
+                ->where('status_tersedia', 'tersedia')
+                ->orderBy('assignments_aktif_count', 'asc')
+                ->first();
+        }
+
+        if ($petugasTerbaik) {
+            // 2. Buat data untuk ditugaskan
+            $data = [
+                'petugas_id' => $petugasTerbaik->id,
+                'instruksi' => 'Otomatis ditugaskan oleh sistem berdasarkan beban tugas terendah.',
+                'jadwal_penanganan' => now()->addHour()->format('Y-m-d\TH:i'), // Set jadwal 1 jam dari sekarang
+            ];
+
+            return $this->tugaskan($pengaduan, $data, $supervisor);
+        }
+
+        return null; // Gagal auto-assign, kembalikan ke manual
+    }
+
+    /**
      * Tugaskan petugas ke pengaduan yang sudah disetujui supervisor.
      */
     public function tugaskan(Pengaduan $pengaduan, array $data, User $supervisor): Assignment
