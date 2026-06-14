@@ -22,11 +22,13 @@ class RatingTest extends TestCase
 
         $kategori = KategoriPengaduan::create([
             'nama_kategori' => 'Kebocoran Pipa',
+            'kode_kategori' => 'KAT_TEST',
             'is_active' => true,
         ]);
 
         $zona = Zona::create([
             'nama_zona' => 'Zona Barat',
+            'kode_zona' => 'ZON_TEST',
             'is_active' => true,
         ]);
 
@@ -63,7 +65,7 @@ class RatingTest extends TestCase
     /** @test */
     public function cannot_rate_incomplete_pengaduan()
     {
-        $this->pengaduan->update(['status' => 'diproses']);
+        $this->pengaduan->update(['status' => 'sedang_diproses']);
 
         $response = $this->actingAs($this->masyarakat)
             ->get(route('masyarakat.rating.create', $this->pengaduan->nomor_tiket));

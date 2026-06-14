@@ -45,6 +45,6 @@ class DashboardStatsTest extends TestCase
     public function test_guest_cannot_fetch_dashboard_stats(): void
     {
         $this->getJson(route('supervisor.dashboard.stats'))
-            ->assertForbidden();
+            ->assertUnauthorized();
     }
 }
